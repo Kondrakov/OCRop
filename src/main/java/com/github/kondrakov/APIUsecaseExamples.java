@@ -15,6 +15,7 @@ import com.github.kondrakov.utils.UtilsConv;
 import com.github.kondrakov.view.VisualDebugForm;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +161,7 @@ public class APIUsecaseExamples {
 
         // 4. Cut stringLetterMatrices from stringMatrix:
         List<List<int[]>> stringLetterMatrices =
-                SourceCutter.simpleCutString(stringMatrixInverted, "simple_cut", BitmapUtils.COLOR_256);
+                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256);
         try {
             for (int i = 0; i < stringLetterMatrices.size(); i++) {
                 CSVProcessorIO.writeMatrixToCSVFile(stringLetterMatrices.get(i),
@@ -222,7 +223,7 @@ public class APIUsecaseExamples {
             System.out.println(ex);
         }
         List<int[]> stringInput = CSVProcessorIO.loadMatrixFromCSVFile("data\\strings_to_recognize\\string_to_cut.csv");
-        SourceCutter.simpleCutString(stringInput, "simple_cut", BitmapUtils.COLOR_256);
+        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256);
     }
 
     public void exampleCropCutByDimensions() {
@@ -250,10 +251,107 @@ public class APIUsecaseExamples {
     }
 
     public void exampleBitmapAssembling() {
-        //example bitmap assempling:
+        //example bitmap assembling:
         List<int[]> list = new HelperA1().loadLetterMatrix();
         BitmapParser.assembleBitmap(list, "header_16_colors_bw",
                 "generated.bmp", BitmapUtils.COLOR_16);
+    }
+
+    public void exampleMultilineInputSourceTextBlock() {
+        DataStash.prepareEtalonModels("data\\bmp_source_models\\en\\%s.bmp",
+                "data\\csv_source_models\\en\\%s.csv",
+                Alphabet.getAlphabetEN(),
+                DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256);
+        //alphabet data preparing: alphabet *.csv => List<int[]> :
+        DataStash.prepareEtalonModels("data\\csv_source_models\\en\\%s.csv", "",
+                Alphabet.getAlphabetEN(),
+                DataStash.FROM_CSV_MODE, BitmapUtils.COLOR_256);
+
+        // Extract bmp from pdf:
+        IFeeder feeder = new PDFBoxFeeder();
+        feeder.feed("data\\pages_to_recognize\\text_multiline.pdf",
+                "data\\pages_to_recognize\\text_multiline.bmp");
+
+        // Cut matrix block with strings from page matrix:
+        List<int[]> blockMatrix = SourceCutter.cutCropByDims(
+                "data\\pages_to_recognize\\text_multiline.bmp",
+                new Rectangle(182, 150, 390, 190),
+                BitmapUtils.COLOR_256
+        );
+
+        // Invert colors to further processing string
+        List<int[]> blockMatrixInverted = UtilsConv.cloneMatrixData(blockMatrix);
+        for (int i = 0; i < blockMatrix.size(); i++) {
+            for (int j = 0; j < blockMatrix.get(i).length; j++) {
+                blockMatrixInverted.get(i)[j] = BitmapUtils.invert(blockMatrixInverted.get(i)[j], BitmapUtils.COLOR_256);
+            }
+        }
+
+        // Cut strings block into strings
+        List<List<int[]>> stringsFromBlock =
+                SourceCutter.simpleCutBlockIntoStrings(blockMatrixInverted);
+
+        try {
+            CSVProcessorIO.writeMatrixToCSVFile(blockMatrixInverted,
+                    "data\\text_block_multiline.csv", false, BitmapUtils.COLOR_256);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+        // Cut stringLetterMatrices from list of stringMatrices:
+        List<List<int[]>> stringLetterMatrices = new ArrayList<>();
+        for (int i = 0; i < stringsFromBlock.size(); i++) {
+            stringLetterMatrices.addAll(
+                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256)
+            );
+        }
+
+        try {
+            for (int i = 0; i < stringLetterMatrices.size(); i++) {
+                CSVProcessorIO.writeMatrixToCSVFile(stringLetterMatrices.get(i),
+                        "data\\text_block_multiline_" + i + ".csv", false, BitmapUtils.COLOR_256);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+
+        // Load reference learned matrices:
+        Map<String, List<int[]>> matrices = DataStash.getLetterMatricesCollection();
+
+        // Load external alphabet and mapping:
+        Alphabet.setExternalAlphabet(
+                "data\\alphabets\\en_alphabet.csv",
+                "data\\alphabets\\en_mapping.csv",
+                Alphabet.EN
+        );
+
+        // 7. Recognize String from stringLetterMatrices:
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < stringLetterMatrices.size(); i++) {
+            Map<String, List<int[]>> formattedMatrices = new HashMap<>();
+            for (Map.Entry<String, List<int[]>> matrixEntry : matrices.entrySet()) {
+                formattedMatrices.put(matrixEntry.getKey(),
+                        Format.frameToPattern(
+                                matrixEntry.getValue(), stringLetterMatrices.get(i)
+                        ));
+                try {
+                    CSVProcessorIO.writeMatrixToCSVFile(
+                            formattedMatrices.get(matrixEntry.getKey()),
+                            String.format(
+                                    "data\\symbols_formatted_csv\\en\\%s.csv",
+                                    matrixEntry.getKey()
+                            ), false, BitmapUtils.COLOR_256
+                    );
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                }
+            }
+            answer.append(Recognizer.recognize(formattedMatrices,
+                    Format.frameExtendPattern(stringLetterMatrices.get(i))
+            ));
+            System.out.println("answer " + answer);
+            System.out.println("EOF" + " letter");
+        }
     }
 
     @Deprecated

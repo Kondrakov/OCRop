@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SourceCutter {
+
+    public final static String SIMPLE_CUT = "simple_cut";
+    public final static String PATH_FIND_CUT = "path_find_cut";
+
     public SourceCutter() {
         // todo search first pixel?
     }
@@ -89,5 +93,35 @@ public class SourceCutter {
             }
         }
         return string;
+    }
+
+    public static List<List<int[]>> simpleCutBlockIntoStrings(List<int[]> rawBlock) {
+        List<List<int[]>> extractedStrings = new ArrayList<>();
+        boolean gapFound;
+        int currStringFound = 0;
+        extractedStrings.add(currStringFound, new ArrayList<>());
+        for (int j = 0; j < rawBlock.size(); j++) {
+            gapFound = true;
+            for (int i = 0; i < rawBlock.get(j).length; i++) {
+                if (rawBlock.get(j)[i] != 0) {
+                    gapFound = false;
+                    break;
+                }
+            }
+
+            if (!gapFound) {
+                extractedStrings.get(currStringFound).add(rawBlock.get(j));
+            } else {
+                if (extractedStrings.get(currStringFound).size() != 0) {
+                    currStringFound ++;
+                    extractedStrings.add(currStringFound, new ArrayList<>());
+                }
+            }
+        }
+        // remove trailing empty row:
+        if (extractedStrings.get(currStringFound).isEmpty()) {
+            extractedStrings.remove(currStringFound);
+        }
+        return extractedStrings;
     }
 }
