@@ -161,7 +161,7 @@ public class APIUsecaseExamples {
 
         // 4. Cut stringLetterMatrices from stringMatrix:
         List<List<int[]>> stringLetterMatrices =
-                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256);
+                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5);
         try {
             for (int i = 0; i < stringLetterMatrices.size(); i++) {
                 CSVProcessorIO.writeMatrixToCSVFile(stringLetterMatrices.get(i),
@@ -184,27 +184,31 @@ public class APIUsecaseExamples {
         // 7. Recognize String from stringLetterMatrices:
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < stringLetterMatrices.size(); i++) {
-            Map<String, List<int[]>> formattedMatrices = new HashMap<>();
-            for (Map.Entry<String, List<int[]>> matrixEntry : matrices.entrySet()) {
-                formattedMatrices.put(matrixEntry.getKey(),
-                        Format.frameToPattern(
-                                matrixEntry.getValue(), stringLetterMatrices.get(i)
-                        ));
-                try {
-                    CSVProcessorIO.writeMatrixToCSVFile(
-                            formattedMatrices.get(matrixEntry.getKey()),
-                            String.format(
-                                    "data\\symbols_formatted_csv\\en\\%s.csv",
-                                    matrixEntry.getKey()
-                            ), false, BitmapUtils.COLOR_256
-                    );
-                } catch (Exception ex) {
-                    System.out.println(ex);
+            if (stringLetterMatrices.get(i).size() > 0) {
+                Map<String, List<int[]>> formattedMatrices = new HashMap<>();
+                for (Map.Entry<String, List<int[]>> matrixEntry : matrices.entrySet()) {
+                    formattedMatrices.put(matrixEntry.getKey(),
+                            Format.frameToPattern(
+                                    matrixEntry.getValue(), stringLetterMatrices.get(i)
+                            ));
+                    try {
+                        CSVProcessorIO.writeMatrixToCSVFile(
+                                formattedMatrices.get(matrixEntry.getKey()),
+                                String.format(
+                                        "data\\symbols_formatted_csv\\en\\%s.csv",
+                                        matrixEntry.getKey()
+                                ), false, BitmapUtils.COLOR_256
+                        );
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                    }
                 }
+                answer.append(Recognizer.recognize(formattedMatrices,
+                        Format.frameExtendPattern(stringLetterMatrices.get(i))
+                ));
+            } else {
+                answer.append(" ");
             }
-            answer.append(Recognizer.recognize(formattedMatrices,
-                    Format.frameExtendPattern(stringLetterMatrices.get(i))
-            ));
             System.out.println("answer " + answer);
             System.out.println("EOF" + " letter");
         }
@@ -223,7 +227,7 @@ public class APIUsecaseExamples {
             System.out.println(ex);
         }
         List<int[]> stringInput = CSVProcessorIO.loadMatrixFromCSVFile("data\\strings_to_recognize\\string_to_cut.csv");
-        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256);
+        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5);
     }
 
     public void exampleCropCutByDimensions() {
@@ -302,7 +306,7 @@ public class APIUsecaseExamples {
         List<List<int[]>> stringLetterMatrices = new ArrayList<>();
         for (int i = 0; i < stringsFromBlock.size(); i++) {
             stringLetterMatrices.addAll(
-                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256)
+                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5)
             );
         }
 
@@ -328,28 +332,32 @@ public class APIUsecaseExamples {
         // 7. Recognize String from stringLetterMatrices:
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < stringLetterMatrices.size(); i++) {
-            Map<String, List<int[]>> formattedMatrices = new HashMap<>();
-            for (Map.Entry<String, List<int[]>> matrixEntry : matrices.entrySet()) {
-                formattedMatrices.put(matrixEntry.getKey(),
-                        Format.frameToPattern(
-                                matrixEntry.getValue(), stringLetterMatrices.get(i)
-                        ));
-                try {
-                    CSVProcessorIO.writeMatrixToCSVFile(
-                            formattedMatrices.get(matrixEntry.getKey()),
-                            String.format(
-                                    "data\\symbols_formatted_csv\\en\\%s.csv",
-                                    matrixEntry.getKey()
-                            ), false, BitmapUtils.COLOR_256
-                    );
-                } catch (Exception ex) {
-                    System.out.println(ex);
+            if (stringLetterMatrices.get(i).size() > 0) {
+                Map<String, List<int[]>> formattedMatrices = new HashMap<>();
+                for (Map.Entry<String, List<int[]>> matrixEntry : matrices.entrySet()) {
+                    formattedMatrices.put(matrixEntry.getKey(),
+                            Format.frameToPattern(
+                                    matrixEntry.getValue(), stringLetterMatrices.get(i)
+                            ));
+                    try {
+                        CSVProcessorIO.writeMatrixToCSVFile(
+                                formattedMatrices.get(matrixEntry.getKey()),
+                                String.format(
+                                        "data\\symbols_formatted_csv\\en\\%s.csv",
+                                        matrixEntry.getKey()
+                                ), false, BitmapUtils.COLOR_256
+                        );
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                    }
                 }
+                answer.append(Recognizer.recognize(formattedMatrices,
+                        Format.frameExtendPattern(stringLetterMatrices.get(i))
+                ));
+            } else {
+                answer.append(" ");
             }
-            answer.append(Recognizer.recognize(formattedMatrices,
-                    Format.frameExtendPattern(stringLetterMatrices.get(i))
-            ));
-            System.out.println("answer " + answer);
+            System.out.println(String.format("answer ->>%s<<-", answer));
             System.out.println("EOF" + " letter");
         }
     }

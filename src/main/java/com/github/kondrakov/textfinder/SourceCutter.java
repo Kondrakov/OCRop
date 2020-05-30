@@ -53,12 +53,14 @@ public class SourceCutter {
     }
 
     //todo feature recognizing the font via neural net to choose mode for cutting letters
-    public static List<List<int[]>> simpleCutString(List<int[]> rawString, String cuttingMode, String colorMode) {
+    public static List<List<int[]>> simpleCutString(List<int[]> rawString, String cuttingMode, String colorMode, int spaceSymbolTolerance) {
         boolean isGapExists = true;
+        int gaps = 0;
         List<List<int[]>> string = new ArrayList<>();
         List<int[]> currentLetter = new ArrayList<>();
         List<Integer> currentColumn;
         List<List<Integer>> currentLetterBuffer = new ArrayList<>();
+
         for (int i = 0; i < rawString.get(0).length; i++) {
             currentColumn = new ArrayList<>();
             isGapExists = true;
@@ -67,6 +69,14 @@ public class SourceCutter {
                     isGapExists = false;
                 }
                 currentColumn.add(rawString.get(j)[i]);
+            }
+            if (!isGapExists) {
+                if (spaceSymbolTolerance < gaps) {
+                    string.add(new ArrayList<>());
+                }
+                gaps = 0;
+            } else {
+                gaps++;
             }
             if (isGapExists) {
                 if (currentLetterBuffer.size() > 0) {
@@ -77,7 +87,7 @@ public class SourceCutter {
                         }
                     }
                     try {
-                        // here inverted already, so switch invertMode to false
+                        // here inverted already, so set invertMode to false
                         CSVProcessorIO.writeMatrixToCSVFile(currentLetter,
                                 "data\\strings_to_recognize\\l" + string.size() + ".csv",
                                 false, colorMode);
