@@ -12,16 +12,20 @@ public class BitmapUtils {
         return invert(color, COLOR_16);
     }
 
-    /*
+    /**
         Bitmap color inversion by color mode, 256 colors mode (1 pixel per byte) by default
      */
     public static int invert(int color, String colorMode) {
+        return maxColorByMode(colorMode) - color;
+    }
+
+    public static int maxColorByMode(String colorMode) {
         if (COLOR_16.equals(colorMode)) {
-            return 15 - color;
+            return 15;
         }
         if (COLOR_256.equals(colorMode)) {
-            return 255 - color;
+            return 255;
         }
-        return 255 - color;
+        return 255;
     }
 }

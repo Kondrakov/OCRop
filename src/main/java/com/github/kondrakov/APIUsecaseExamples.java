@@ -351,8 +351,9 @@ public class APIUsecaseExamples {
                         System.out.println(ex);
                     }
                 }
-                answer.append(Recognizer.recognize(formattedMatrices,
-                        Format.frameExtendPattern(stringLetterMatrices.get(i))
+                answer.append(Recognizer.recognizeByPercent(formattedMatrices,
+                        Format.frameExtendPattern(stringLetterMatrices.get(i)),
+                        BitmapUtils.COLOR_256
                 ));
             } else {
                 answer.append(" ");
