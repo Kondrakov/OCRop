@@ -65,9 +65,10 @@ public class Recognizer {
                     }
                 }
             }
+
             System.out.println("letter " + letter.getKey() + " matchResult " + matchResult);
             if (matchResult > maxMatchResult) {
-                result = Alphabet.getMappingEN().get(letter.getKey());
+                result = Alphabet.getCurrentMapping().get(letter.getKey());
             }
             maxMatchResult = Double.max(maxMatchResult, matchResult);
         }

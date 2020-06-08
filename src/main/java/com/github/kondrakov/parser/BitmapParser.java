@@ -106,10 +106,11 @@ public class BitmapParser {
                     }
                 }
             }
+
             fileInputString.close();
             fileOutputStream.close();
         } catch (IOException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("Not found BMP file for parsing" + ex.getMessage());
         }
         return rawImageMatrix;
     }

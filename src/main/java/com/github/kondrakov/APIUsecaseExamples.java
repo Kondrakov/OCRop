@@ -10,6 +10,7 @@ import com.github.kondrakov.model.Alphabet;
 import com.github.kondrakov.parser.BitmapParser;
 import com.github.kondrakov.parser.BitmapUtils;
 import com.github.kondrakov.recognize.Recognizer;
+import com.github.kondrakov.scenario.BundleScenarios;
 import com.github.kondrakov.textfinder.SourceCutter;
 import com.github.kondrakov.utils.UtilsConv;
 import com.github.kondrakov.view.VisualDebugForm;
@@ -361,6 +362,29 @@ public class APIUsecaseExamples {
             System.out.println(String.format("answer ->>%s<<-", answer));
             System.out.println("EOF" + " letter");
         }
+    }
+
+    public void bundleScenarioExample() {
+        String recognizeString = (new BundleScenarios()).
+                loadSymbolsRange("data\\alphabets\\ru_alphabet_capitals.csv",
+                        "data\\alphabets\\ru_mapping_capitals.csv",
+                        Alphabet.RU).
+                loadAlphabetModel("data\\bmp_source_models\\ru_courier_new_bold\\%s.bmp",
+                        "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
+                        Alphabet.getAlphabetRU(),
+                        DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
+                extractStringsToRecognize(
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign.pdf",
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign.bmp",
+                        new Rectangle(182, 150, 390, 190),
+                        BitmapUtils.COLOR_256,
+                        SourceCutter.SIMPLE_CUT,
+                        0
+                ).
+                recognize().
+                getRecognized();
+        System.out.println(recognizeString);
+        System.out.println("answer ==>" + recognizeString);
     }
 
     @Deprecated

@@ -186,4 +186,28 @@ public class Alphabet {
             );
         }
     }
+
+    private static Map<String, String> currentMapping;
+    private static List<String> currentAlphabet;
+
+    public static Map<String, String> getCurrentMapping() {
+        return currentMapping;
+    }
+    public static List<String> getCurrentAlphabet() {
+        return currentAlphabet;
+    }
+    public static void setCurrentSet(String set) {
+        if (RU.equals(set)) {
+            currentAlphabet = alphabetRU;
+            currentMapping = mappingRU;
+        } else if (EN.equals(set)) {
+            currentAlphabet = alphabetEN;
+            currentMapping = mappingEN;
+        } else {
+            System.out.println(
+                    String.format("Mode %s not supported.", set)
+            );
+        }
+    }
+
 }
