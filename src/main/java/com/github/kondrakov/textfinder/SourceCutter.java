@@ -7,12 +7,14 @@ import com.github.kondrakov.parser.BitmapUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SourceCutter {
 
     public final static String SIMPLE_CUT = "simple_cut";
     public final static String PATH_FIND_CUT = "path_find_cut";
+    public final static String NO_GAP_SEARCH_CUT = "no_gap_search_cut";
 
     public SourceCutter() {
         // todo search first pixel?
@@ -53,7 +55,7 @@ public class SourceCutter {
     }
 
     //todo feature recognizing the font via neural net to choose mode for cutting letters
-    public static List<List<int[]>> simpleCutString(List<int[]> rawString, String cuttingMode, String colorMode, int spaceSymbolTolerance) {
+    public static List<List<int[]>> simpleCutString(List<int[]> rawString, String cuttingMode, String colorMode, int spaceSymbolTolerance, int averageWidth) {
         boolean isGapExists = true;
         int gaps = 0;
         List<List<int[]>> string = new ArrayList<>();
@@ -94,6 +96,43 @@ public class SourceCutter {
                     } catch (Exception ex) {
                         System.out.println(ex);
                     }
+                    if (currentLetter.size() > 0) {
+                        System.out.println("length " + currentLetter.get(0).length);
+                    }
+
+                    if (NO_GAP_SEARCH_CUT.equals(cuttingMode) && averageWidth > 0) {
+                        //we check welded letters here and cut by average letter width (better working with mono-width fonts)
+                        long addSymbolsCount = Math.round((double)currentLetter.get(0).length / (double) averageWidth);
+
+                        if (addSymbolsCount > 1) {
+                            long width = Math.round((double)currentLetter.get(0).length / (double) addSymbolsCount);
+                            List<List<int[]>> extractedLetters = new ArrayList<>();
+                            for (int j = 0; j < addSymbolsCount; j++) {
+                                extractedLetters.add(new ArrayList<>());
+                            }
+                            for (int j = 0; j < currentLetter.size(); j++) {
+                                for (int k = 0; k < addSymbolsCount; k++) {
+                                    extractedLetters.get(k).add(
+                                            Arrays.copyOfRange(currentLetter.get(j),
+                                                    (int)(k * width), (int)((k + 1) * width))
+                                    );
+                                }
+                            }
+
+                            try {
+                                CSVProcessorIO.writeMatrixToCSVFile(extractedLetters.get(1),
+                                        "data\\teststring1.csv", false, BitmapUtils.COLOR_256);
+                                CSVProcessorIO.writeMatrixToCSVFile(extractedLetters.get(2),
+                                        "data\\teststring2.csv", false, BitmapUtils.COLOR_256);
+                            } catch (Exception ex) {
+                                System.out.println(ex);
+                            }
+                            string.addAll(extractedLetters);
+                        }
+
+
+                    }
+                    //todo exclude if subdivided when no_gap_search_cut mode used
                     string.add(currentLetter);
                     currentLetter = new ArrayList<>();
                 }

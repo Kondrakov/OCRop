@@ -162,7 +162,7 @@ public class APIUsecaseExamples {
 
         // 4. Cut stringLetterMatrices from stringMatrix:
         List<List<int[]>> stringLetterMatrices =
-                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5);
+                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0);
         try {
             for (int i = 0; i < stringLetterMatrices.size(); i++) {
                 CSVProcessorIO.writeMatrixToCSVFile(stringLetterMatrices.get(i),
@@ -228,7 +228,7 @@ public class APIUsecaseExamples {
             System.out.println(ex);
         }
         List<int[]> stringInput = CSVProcessorIO.loadMatrixFromCSVFile("data\\strings_to_recognize\\string_to_cut.csv");
-        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5);
+        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0);
     }
 
     public void exampleCropCutByDimensions() {
@@ -307,7 +307,7 @@ public class APIUsecaseExamples {
         List<List<int[]>> stringLetterMatrices = new ArrayList<>();
         for (int i = 0; i < stringsFromBlock.size(); i++) {
             stringLetterMatrices.addAll(
-                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5)
+                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0)
             );
         }
 
@@ -378,8 +378,8 @@ public class APIUsecaseExamples {
                         "data\\pages_to_recognize\\ru_bold_courier_new_sign.bmp",
                         new Rectangle(182, 150, 390, 190),
                         BitmapUtils.COLOR_256,
-                        SourceCutter.SIMPLE_CUT,
-                        0
+                        SourceCutter.NO_GAP_SEARCH_CUT,
+                        4, 19
                 ).
                 recognize().
                 getRecognized();

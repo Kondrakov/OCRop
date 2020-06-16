@@ -36,7 +36,7 @@ public class BundleScenarios {
 
     public BundleScenarios extractStringsToRecognize(String pathPdf, String pathBmp,
                                                      Rectangle bounds, String colorMode,
-                                                     String cutMode, int cutTolerance) {
+                                                     String cutMode, int spaceSymbolTolerance, int averageWidth) {
         IFeeder feeder = new PDFBoxFeeder();
         feeder.feed(pathPdf, pathBmp);
 
@@ -54,7 +54,7 @@ public class BundleScenarios {
         toRecognizeMatrices = new ArrayList<>();
         for (int i = 0; i < stringsFromBlock.size(); i++) {
             toRecognizeMatrices.addAll(
-                    SourceCutter.simpleCutString(stringsFromBlock.get(i), cutMode, colorMode, cutTolerance)
+                    SourceCutter.simpleCutString(stringsFromBlock.get(i), cutMode, colorMode, spaceSymbolTolerance, averageWidth)
             );
         }
         return this;
