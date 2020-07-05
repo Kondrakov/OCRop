@@ -1,5 +1,6 @@
 package com.github.kondrakov.scenario;
 
+import com.github.kondrakov.approximate.TrainSet;
 import com.github.kondrakov.feed.CSVProcessorIO;
 import com.github.kondrakov.feed.DataStash;
 import com.github.kondrakov.feed.IFeeder;
@@ -34,6 +35,45 @@ public class BundleScenarios {
         return this;
     }
 
+    public BundleScenarios loadAndMergeAlphabetModel(String basePathFrom1, String basePathTo1,
+                                                     String basePathFrom2, String basePathTo2,
+                                             List<String> alphabetRange, String sourceMode,
+                                             String colorMode) {
+        DataStash.prepareEtalonModelsForMerge(
+                basePathFrom1, basePathTo1,
+                basePathFrom2, basePathTo2,
+                alphabetRange, sourceMode, colorMode);
+
+        List<Map<String, List<int[]>>> letterMatricesCollections =  DataStash.getLetterMatricesCollections();
+        Map<String, List<int[]>> mergedMap = new HashMap<>();
+        for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollections.get(0).entrySet()) {
+            System.out.println("merge " + matrixEntry.getKey());
+            mergedMap.put(
+                    matrixEntry.getKey(),
+                    TrainSet.mergeOverlappingWeights(
+                            matrixEntry.getValue(),
+                            letterMatricesCollections.get(1).get(matrixEntry.getKey())
+                    )
+            );
+
+            try {
+                CSVProcessorIO.writeMatrixToCSVFile(
+                        mergedMap.get(matrixEntry.getKey()),
+                        String.format(
+                                "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
+                                matrixEntry.getKey()
+                        ),
+                        false,
+                        colorMode);
+            } catch (Exception ex) {
+                System.out.println("Can't write " + ex);
+            }
+
+        }
+        etalonMatrices = mergedMap;
+        return this;
+    }
+
     public BundleScenarios extractStringsToRecognize(String pathPdf, String pathBmp,
                                                      Rectangle bounds, String colorMode,
                                                      String cutMode, int spaceSymbolTolerance, int averageWidth) {
@@ -61,7 +101,9 @@ public class BundleScenarios {
     }
 
     public BundleScenarios recognize() {
-        etalonMatrices = DataStash.getLetterMatricesCollection();
+        if (etalonMatrices == null) {
+            etalonMatrices = DataStash.getLetterMatricesCollection();
+        }
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
@@ -83,9 +125,51 @@ public class BundleScenarios {
                         System.out.println(ex);
                     }
                 }
-                answer.append(Recognizer.recognizeByPercent(formattedMatrices,
+                /*answer.append(Recognizer.recognizeByPercent(formattedMatrices,
                         Format.frameExtendPattern(toRecognizeMatrices.get(i)),
                         BitmapUtils.COLOR_256
+                ));
+*/
+                answer.append(Recognizer.recognize(formattedMatrices,
+                        Format.frameExtendPattern(toRecognizeMatrices.get(i))
+                ));
+            } else {
+                answer.append(" ");
+            }
+            System.out.println(String.format("answer ->>%s<<-", answer));
+            System.out.println("EOF" + " letter");
+        }
+        this.recognized = answer.toString();
+        return this;
+    }
+
+    public BundleScenarios recognizeSimple() {
+        if (etalonMatrices == null) {
+            etalonMatrices = DataStash.getLetterMatricesCollection();
+        }
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < toRecognizeMatrices.size(); i++) {
+            if (toRecognizeMatrices.get(i).size() > 0) {
+                Map<String, List<int[]>> formattedMatrices = new HashMap<>();
+                for (Map.Entry<String, List<int[]>> matrixEntry : etalonMatrices.entrySet()) {
+                    formattedMatrices.put(matrixEntry.getKey(),
+                            Format.frameToPattern(
+                                    matrixEntry.getValue(), toRecognizeMatrices.get(i)
+                            ));
+                    try {
+                        CSVProcessorIO.writeMatrixToCSVFile(
+                                formattedMatrices.get(matrixEntry.getKey()),
+                                String.format(
+                                        "data\\symbols_formatted_csv\\en\\%s.csv",
+                                        matrixEntry.getKey()
+                                ), false, BitmapUtils.COLOR_256
+                        );
+                    } catch (Exception ex) {
+                        System.out.println(ex);
+                    }
+                }
+                answer.append(Recognizer.recognizeSimple(formattedMatrices,
+                        Format.frameExtendPattern(toRecognizeMatrices.get(i))
                 ));
             } else {
                 answer.append(" ");

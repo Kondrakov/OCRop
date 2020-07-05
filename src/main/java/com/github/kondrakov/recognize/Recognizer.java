@@ -32,17 +32,59 @@ public class Recognizer {
             }
             System.out.println("letter " + letter.getKey() + " matchResult " + matchResult);
             if (matchResult > maxMatchResult) {
-                result = Alphabet.getMappingEN().get(letter.getKey());
+                //result = Alphabet.getMappingEN().get(letter.getKey());
+                result = Alphabet.getCurrentMapping().get(letter.getKey());
             }
             maxMatchResult = Integer.max(maxMatchResult, matchResult);
         }
         return result;
     }
 
+    public static String recognizeSimple(Map<String, List<int[]>> alphabet, List<int[]> guessedLetter) {
+        int matchResult;
+        int maxMatchResult = Integer.MIN_VALUE;
+        String result = "";
+        for (Map.Entry<String, List<int[]>> letter : alphabet.entrySet()) {
+            matchResult = 0;
+
+            alphabet.put(letter.getKey(), UtilsConv.fitMatrixCanvas(letter.getValue(),
+                    guessedLetter.get(0).length,
+                    guessedLetter.size()
+            ));
+
+            for (int y = 0; y < guessedLetter.size(); y++) {
+                for (int x = 0; x < guessedLetter.get(0).length; x++) {
+                    if (guessedLetter.get(y)[x] > 0 && letter.getValue().get(y)[x] > 0 ||
+                            guessedLetter.get(y)[x] == 0 && letter.getValue().get(y)[x] == 0) {
+                        matchResult ++;
+                    } else {
+                        matchResult -= 2;
+                    }
+                }
+            }
+            System.out.println("letter " + letter.getKey() + " matchResult " + matchResult);
+            if (matchResult > maxMatchResult) {
+                result = Alphabet.getCurrentMapping().get(letter.getKey());
+            }
+            maxMatchResult = Integer.max(maxMatchResult, matchResult);
+        }
+        return result;
+    }
 
     public static String recognizeByPercent(Map<String, List<int[]>> alphabet,
                                             List<int[]> guessedLetter, String colorMode) {
+        ////////////////////////////////////////////////
+        //double percentValue = ((double) BitmapUtils.maxColorByMode(colorMode) + 1.0d) / 100;
+
+
+        //double basePercent = 100.00d;
+        //double percentValue =
+
+        ////////////////////////////////////////////////
+
+
         double percentValue = ((double) BitmapUtils.maxColorByMode(colorMode) + 1.0d) / 100;
+
         double matchResult;
         double maxMatchResult = -Double.MAX_VALUE;
         String result = "";

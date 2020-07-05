@@ -387,6 +387,32 @@ public class APIUsecaseExamples {
         System.out.println("answer ==>" + recognizeString);
     }
 
+    public void bundleScenarioExampleWithMerge() {
+        String recognizeString = (new BundleScenarios()).
+                loadSymbolsRange("data\\alphabets\\ru_alphabet_capitals.csv",
+                        "data\\alphabets\\ru_mapping_capitals.csv",
+                        Alphabet.RU).
+                        loadAndMergeAlphabetModel(
+                        "data\\bmp_source_models\\ru_courier_new_bold\\%s.bmp",
+                        "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
+                        "data\\bmp_source_models\\ru_courier_new_bold_left_cut\\%s.bmp",
+                        "data\\csv_source_models\\ru_courier_new_bold_left_cut\\%s.csv",
+                        Alphabet.getAlphabetRU(),
+                        DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
+                        extractStringsToRecognize(
+                                "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
+                                "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
+                                new Rectangle(182, 150, 325, 190),
+                                BitmapUtils.COLOR_256,
+                                SourceCutter.NO_GAP_SEARCH_CUT,
+                                4, 19
+                        ).
+                        recognizeSimple().
+                        getRecognized();
+        System.out.println(recognizeString);
+        System.out.println("answer ==>" + recognizeString);
+    }
+
     @Deprecated
     public void exampleBitmapLoadingAndAssembling() {
         //example bitmap loading and assembling:
