@@ -63,8 +63,13 @@ public class TrainSet {
     }
 
     public static List<int[]> trimRightCanvasToFit(List<int[]> baseInput, List<int[]> castInput) {
-        int widthCanvasBase = baseInput.get(0).length;
         int widthCanvasCast = castInput.get(0).length;
+        return trimRightCanvasToFit(baseInput, widthCanvasCast);
+    }
+
+    public static List<int[]> trimRightCanvasToFit(List<int[]> baseInput, int toWidth) {
+        int widthCanvasBase = baseInput.get(0).length;
+        int widthCanvasCast = toWidth;
         List<int[]> baseInputModif = UtilsConv.cloneMatrixData(baseInput);
         if (widthCanvasBase == widthCanvasCast) {
         } else if (widthCanvasBase < widthCanvasCast) {
@@ -125,6 +130,32 @@ public class TrainSet {
                     input.get(i).length - 1
                 )
             );
+        }
+        return output;
+    }
+
+    ////////////////////////////////
+
+    public static List<int[]> cornerizeTrimModel(List<int[]> input, int width, int height) {
+        List<int[]> output = trimLeftBlancSpace(input);
+        output = trimRightCanvasToFit(output, width);
+        int startCutInd = -1;
+        for (int i = 0; i < output.size(); i++) {
+            for (int j = 0; j < output.get(i).length; j++) {
+                if (output.get(i)[j] > 0) {
+                    if (startCutInd == -1)
+                        startCutInd = i;
+                    break;
+                }
+            }
+        }
+        output = output.subList(startCutInd, output.size() - 1);
+        if (output.size() > height) {
+            output = output.subList(0, height - 1);
+        }
+        int[] stub = new int[output.get(0).length];
+        while (output.size() < height) {
+            output.add(stub);
         }
         return output;
     }

@@ -99,7 +99,7 @@ public class APIUsecaseExamples {
         Map<String, List<int[]>> matrices = DataStash.getLetterMatricesCollection();
         StringBuilder answer = new StringBuilder();
         Map<String, List<int[]>> formattedMatrices = new HashMap<>();
-        for (Map.Entry<String, List<int[]>> matrixEntry:matrices.entrySet()) {
+        for (Map.Entry<String, List<int[]>> matrixEntry : matrices.entrySet()) {
             formattedMatrices.put(matrixEntry.getKey(),
                     Format.frameToPattern(
                             matrixEntry.getValue(), toRecognizeFormatted
@@ -166,7 +166,7 @@ public class APIUsecaseExamples {
         try {
             for (int i = 0; i < stringLetterMatrices.size(); i++) {
                 CSVProcessorIO.writeMatrixToCSVFile(stringLetterMatrices.get(i),
-                        "data\\teststring_"+ i + ".csv", false, BitmapUtils.COLOR_256);
+                        "data\\teststring_" + i + ".csv", false, BitmapUtils.COLOR_256);
             }
         } catch (Exception ex) {
             System.out.println(ex);
@@ -392,25 +392,50 @@ public class APIUsecaseExamples {
                 loadSymbolsRange("data\\alphabets\\ru_alphabet_capitals.csv",
                         "data\\alphabets\\ru_mapping_capitals.csv",
                         Alphabet.RU).
-                        loadAndMergeAlphabetModel(
+                loadAndMergeAlphabetModel(
                         "data\\bmp_source_models\\ru_courier_new_bold\\%s.bmp",
                         "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
                         "data\\bmp_source_models\\ru_courier_new_bold_left_cut\\%s.bmp",
                         "data\\csv_source_models\\ru_courier_new_bold_left_cut\\%s.csv",
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
-                        extractStringsToRecognize(
-                                "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
-                                "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
-                                new Rectangle(182, 150, 325, 190),
-                                BitmapUtils.COLOR_256,
-                                SourceCutter.NO_GAP_SEARCH_CUT,
-                                4, 19
-                        ).
-                        recognizeSimple().
-                        getRecognized();
+                extractStringsToRecognize(
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
+                        new Rectangle(182, 150, 325, 190),
+                        BitmapUtils.COLOR_256,
+                        SourceCutter.NO_GAP_SEARCH_CUT,
+                        4, 19
+                ).
+                recognizeSimple().
+                getRecognized();
         System.out.println(recognizeString);
         System.out.println("answer ==>" + recognizeString);
+    }
+
+    public void bundleScenarioExampleNeural() {
+        String recognizeString = (new BundleScenarios()).
+                loadSymbolsRange("data\\alphabets\\ru_alphabet_capitals.csv",
+                        "data\\alphabets\\ru_mapping_capitals.csv",
+                        Alphabet.RU).
+                loadAndMergeAlphabetModel(
+                        "data\\bmp_source_models\\ru_courier_new_bold\\%s.bmp",
+                        "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
+                        "data\\bmp_source_models\\ru_courier_new_bold_left_cut\\%s.bmp",
+                        "data\\csv_source_models\\ru_courier_new_bold_left_cut\\%s.csv",
+                        Alphabet.getAlphabetRU(),
+                        DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
+                extractStringsToRecognize(
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
+                        new Rectangle(182, 150, 325, 190),
+                        BitmapUtils.COLOR_256,
+                        SourceCutter.NO_GAP_SEARCH_CUT,
+                        4, 19
+                ).
+                cornerizeModels(25, 25).
+                neuralRecognize().
+                getRecognized();
     }
 
     @Deprecated

@@ -8,6 +8,7 @@ import com.github.kondrakov.feed.PDFBoxFeeder;
 import com.github.kondrakov.format.Format;
 import com.github.kondrakov.model.Alphabet;
 import com.github.kondrakov.parser.BitmapUtils;
+import com.github.kondrakov.recognize.NeuralRecognizer;
 import com.github.kondrakov.recognize.Recognizer;
 import com.github.kondrakov.textfinder.SourceCutter;
 import com.github.kondrakov.utils.UtilsConv;
@@ -28,6 +29,8 @@ public class BundleScenarios {
         return this;
     }
 
+    private List<Map<String, List<int[]>>> letterMatricesCollectionsThis;
+
     public BundleScenarios loadAlphabetModel(String basePathFrom, String basePathTo,
                                              List<String> alphabetRange, String sourceMode,
                                              String colorMode) {
@@ -45,6 +48,7 @@ public class BundleScenarios {
                 alphabetRange, sourceMode, colorMode);
 
         List<Map<String, List<int[]>>> letterMatricesCollections =  DataStash.getLetterMatricesCollections();
+        letterMatricesCollectionsThis = letterMatricesCollections;
         Map<String, List<int[]>> mergedMap = new HashMap<>();
         for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollections.get(0).entrySet()) {
             System.out.println("merge " + matrixEntry.getKey());
@@ -187,5 +191,52 @@ public class BundleScenarios {
     private String recognized;
     public String getRecognized() {
         return this.recognized;
+    }
+
+    List<List<int[]>> toRecognizeMatricesModif;
+
+    private int w;
+    private int h;
+
+    public BundleScenarios cornerizeModels(int width, int height) {
+        w = width;
+        h = height;
+        Map<String, List<int[]>> currMap;
+        List<Map<String, List<int[]>>> currList = new ArrayList<>();
+
+        for (int i = 0; i < letterMatricesCollectionsThis.size(); i++) {
+            currMap = new HashMap<>();
+            for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollectionsThis.get(i).entrySet()) {
+                currMap.put(matrixEntry.getKey(), TrainSet.cornerizeTrimModel(
+                        matrixEntry.getValue(), width, height
+                ));
+            }
+            currList.add(currMap);
+        }
+        letterMatricesCollectionsThis = currList;
+
+        toRecognizeMatricesModif = new ArrayList<>();
+        for (int i = 0; i < toRecognizeMatrices.size(); i++) {
+            if (toRecognizeMatrices.get(i).size() > 0) {
+                toRecognizeMatricesModif.add(TrainSet.cornerizeTrimModel(toRecognizeMatrices.get(i),
+                        width, height));
+            }
+        }
+        toRecognizeMatrices = toRecognizeMatricesModif;
+        return this;
+    }
+
+    public BundleScenarios neuralRecognize() {
+        NeuralRecognizer.initNet(w, h);
+        NeuralRecognizer.createNet();
+        NeuralRecognizer.testSet(letterMatricesCollectionsThis);
+        StringBuilder answer = new StringBuilder();
+        for (int i = 0; i < toRecognizeMatricesModif.size(); i++) {
+            answer.append(
+                    NeuralRecognizer.recognize(toRecognizeMatricesModif.get(i))
+            );
+        }
+        recognized = answer.toString();
+        return this;
     }
 }
