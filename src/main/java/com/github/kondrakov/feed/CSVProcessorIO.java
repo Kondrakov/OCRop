@@ -78,4 +78,43 @@ public class CSVProcessorIO {
         }
         writer.close();
     }
+
+    /**
+         Writing for matrices of trained weights
+     */
+    public static void writeMatrixToCSVFile(double[][] inputMatrix, String outputPath) throws Exception {
+        CSVWriter writer = new CSVWriter(new FileWriter(outputPath), ';', '"');
+        for (int i = 0; i < inputMatrix.length; i++) {
+            writer.writeNext(UtilsConv.arrDoubleToArrStr(inputMatrix[i]));
+        }
+        writer.close();
+    }
+
+    /**
+        Reading for matrices of trained weights
+     */
+    public static double[][] loadMatrixDoubleFromCSVFile(String inputPath) {
+        //List<int[]> matrix = new ArrayList<>();
+        List<double[]> matrix = new ArrayList<>();
+        double[][] matrixOutput = new double[0][0];
+        String[] currentRow = new String[0];
+        try {
+            CSVReader reader = new CSVReader(new FileReader(inputPath), ';', '"', 0);
+            while (currentRow != null) {
+                currentRow = reader.readNext();
+                if (currentRow != null) {
+                    matrix.add(UtilsConv.arrStrToArrDouble(currentRow));
+                }
+            }
+            matrixOutput = new double[matrix.size()][matrix.get(0).length];
+            for (int i = 0; i < matrix.size(); i++) {
+                for (int j = 0; j < matrix.get(i).length; j++) {
+                    matrixOutput[i][j] = matrix.get(i)[j];
+                }
+            }
+        } catch (IOException ex) {
+            System.out.println("IOException exeption loadMatrixFromCSVFile: " + ex);
+        }
+        return matrixOutput;
+    }
 }

@@ -17,6 +17,18 @@ public class UtilsConv {
         return arrStr;
     }
 
+    public static String[] arrDoubleToArrStr(double[] arrDouble) {
+        String[] arrStr = new String[arrDouble.length];
+        IntStream.range(0, arrDouble.length).forEach(i -> arrStr[i] = String.valueOf(arrDouble[i]));
+        return arrStr;
+    }
+
+    public static double[] arrStrToArrDouble(String[] arrStr) {
+        double[] arrDouble = new double[arrStr.length];
+        IntStream.range(0, arrDouble.length).forEach(i -> arrDouble[i] = Double.parseDouble(arrStr[i]));
+        return arrDouble;
+    }
+
     public static List<int[]> fitMatrixCanvas(List<int[]> inputMatrix, int width, int heigth) {
         int[] rowCash = null;
         for (int i = 0; i < heigth; i++) {

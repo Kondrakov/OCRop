@@ -51,7 +51,6 @@ public class BundleScenarios {
         letterMatricesCollectionsThis = letterMatricesCollections;
         Map<String, List<int[]>> mergedMap = new HashMap<>();
         for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollections.get(0).entrySet()) {
-            System.out.println("merge " + matrixEntry.getKey());
             mergedMap.put(
                     matrixEntry.getKey(),
                     TrainSet.mergeOverlappingWeights(
@@ -226,10 +225,36 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios neuralRecognize() {
+    public BundleScenarios neuralTrain(
+            String inputToHiddenWeightsPathSave,
+            String hiddenToOutputPathSave
+       ) {
+        this.inputToHiddenSourcePath = inputToHiddenWeightsPathSave;
+        this.hiddenToOutputSourcePath = hiddenToOutputPathSave;
+
         NeuralRecognizer.initNet(w, h);
         NeuralRecognizer.createNet();
-        NeuralRecognizer.testSet(letterMatricesCollectionsThis);
+        NeuralRecognizer.testSet(letterMatricesCollectionsThis, 100);
+
+        try {
+            CSVProcessorIO.writeMatrixToCSVFile(
+                    NeuralRecognizer.getInputToHiddenWeights(),
+                    inputToHiddenWeightsPathSave
+            );
+            CSVProcessorIO.writeMatrixToCSVFile(
+                    NeuralRecognizer.getHiddenToOutputWeights(),
+                    hiddenToOutputPathSave
+            );
+        } catch (Exception ex) {
+            System.out.println("Can't write weight model files");
+        }
+        return this;
+    }
+
+    private String inputToHiddenSourcePath;
+    private String hiddenToOutputSourcePath;
+
+    public BundleScenarios neuralRecognize() {
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < toRecognizeMatricesModif.size(); i++) {
             answer.append(
@@ -237,6 +262,24 @@ public class BundleScenarios {
             );
         }
         recognized = answer.toString();
+        return this;
+    }
+
+    public BundleScenarios neuralRecognize(String inputToHiddenSource,
+                                           String hiddenToOutputSource) {
+        StringBuilder answer = new StringBuilder();
+        NeuralRecognizer.loadTrained(
+                inputToHiddenSource,
+                hiddenToOutputSource
+        );
+        for (int i = 0; i < toRecognizeMatricesModif.size(); i++) {
+            answer.append(
+                    NeuralRecognizer.recognize(
+                            toRecognizeMatricesModif.get(i)
+                    )
+            );
+        }
+        this.neuralRecognize();
         return this;
     }
 }

@@ -1,5 +1,6 @@
 package com.github.kondrakov.recognize;
 
+import com.github.kondrakov.feed.CSVProcessorIO;
 import com.github.kondrakov.model.Alphabet;
 
 import java.util.List;
@@ -22,10 +23,19 @@ public class NeuralRecognizer {
     private static double[][] inputToHiddenWeights;
     private static double[][] hiddenToOutputWeights;
 
+    public static double[][] getInputToHiddenWeights() {
+        return NeuralRecognizer.inputToHiddenWeights;
+    }
+
+    public static double[][] getHiddenToOutputWeights() {
+        return NeuralRecognizer.hiddenToOutputWeights;
+    }
+
     //w 25 h 25
     public static void initNet(int inputNodesWidth, int inputNodesHeight) {
         NeuralRecognizer.inputNodes = inputNodesWidth * inputNodesHeight;
-        NeuralRecognizer.hiddenNodes = 50;
+        //NeuralRecognizer.hiddenNodes = 300;
+        NeuralRecognizer.hiddenNodes = 100;
         NeuralRecognizer.outputNodes = 33;
 
         NeuralRecognizer.targetSymbols = new String[33];
@@ -66,12 +76,26 @@ public class NeuralRecognizer {
 
     public static void testSet(List<Map<String, List<int[]>>> trainSet) {
         for (int i = 0; i < trainSet.size(); i++) {
-            for (Map.Entry<String, List<int[]>> matrixEntry : trainSet.get(0).entrySet()) {
+            for (Map.Entry<String, List<int[]>> matrixEntry : trainSet.get(i).entrySet()) {
                 NeuralRecognizer.train(
                         fillTargets(matrixEntry.getKey()),
                         fillInputs(matrixEntry.getValue())
                 );
             }
+        }
+    }
+
+    /**
+        If there aren't enough train sets to train net the "Overtrain" needed.
+        Approximately 40 full train alphabet sets is recommended minimum for net.
+        For example we have one train set with 26 EN letters.
+        So for effective recognize we need to train resulting model 26 x 40 times.
+        In this case overTrainIterations = 40.
+        Augmentation of data may be applied instead of "Overtrain".
+     */
+    public static void testSet(List<Map<String, List<int[]>>> trainSet, int overTrainIterations) {
+        for (int i = 0; i < overTrainIterations; i++) {
+            testSet(trainSet);
         }
     }
 
@@ -119,7 +143,6 @@ public class NeuralRecognizer {
     }
 
     public static double[][] fillInputs(List<int[]> trainMatrixEntry) {
-        System.out.println(trainMatrixEntry.size() + " " + trainMatrixEntry.get(0).length);
         double[][] inputs = new double[trainMatrixEntry.size()][trainMatrixEntry.get(0).length];
         for (int i = 0; i < trainMatrixEntry.size(); i++) {
             for (int j = 0; j < trainMatrixEntry.get(i).length; j++) {
@@ -180,7 +203,7 @@ public class NeuralRecognizer {
         }
 
         //multiply matrices
-        double[] hiddenErrors = new double[outErrors.length];
+        double[] hiddenErrors = new double[weightMatrix[0].length];
         for (int i = 0; i < weightMatrixTrans.length; i++) {
             hiddenErrors[i] = 0d;
             for (int j = 0; j < weightMatrixTrans[i].length; j++) {
@@ -248,5 +271,18 @@ public class NeuralRecognizer {
             }
         }
         return Alphabet.getCurrentAlphabet().get(maxTriggerFlag);
+    }
+
+    public static void loadTrained(String inputToHiddenSource,
+                                   String hiddenToOutputSource) {
+
+        NeuralRecognizer.inputToHiddenWeights =
+                CSVProcessorIO.loadMatrixDoubleFromCSVFile(
+                        inputToHiddenSource
+                );
+        NeuralRecognizer.hiddenToOutputWeights =
+                CSVProcessorIO.loadMatrixDoubleFromCSVFile(
+                        hiddenToOutputSource
+                );
     }
 }

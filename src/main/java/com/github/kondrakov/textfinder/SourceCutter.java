@@ -96,9 +96,9 @@ public class SourceCutter {
                     } catch (Exception ex) {
                         System.out.println(ex);
                     }
-                    if (currentLetter.size() > 0) {
+                    /*if (currentLetter.size() > 0) {
                         System.out.println("length " + currentLetter.get(0).length);
-                    }
+                    }*/
 
                     if (NO_GAP_SEARCH_CUT.equals(cuttingMode) && averageWidth > 0) {
                         //we check welded letters here and cut by average letter width (better working with mono-width fonts)
