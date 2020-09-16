@@ -13,6 +13,7 @@ import com.github.kondrakov.recognize.Recognizer;
 import com.github.kondrakov.scenario.BundleScenarios;
 import com.github.kondrakov.textfinder.SourceCutter;
 import com.github.kondrakov.utils.UtilsConv;
+import com.github.kondrakov.utils.UtilsEncode;
 import com.github.kondrakov.view.VisualDebugForm;
 
 import java.awt.*;
@@ -79,11 +80,11 @@ public class APIUsecaseExamples {
         try {
             DataStash.stashBMPAsCSV(String.format(
                     "data\\symbols_to_recognize\\en\\%s.bmp",
-                    letter
+                    UtilsEncode.toRuntimeCharset(letter)
                     ),
                     String.format(
                             "data\\symbols_to_recognize_csv\\en\\%s.csv",
-                            letter
+                            UtilsEncode.toRuntimeCharset(letter)
                     ),
                     true, true, BitmapUtils.COLOR_256);
         } catch (Exception ex) {
@@ -92,7 +93,8 @@ public class APIUsecaseExamples {
 
         List<int[]> toRecognize = CSVProcessorIO.
                 loadMatrixFromCSVFile(
-                        String.format("data\\symbols_to_recognize_csv\\en\\%s.csv", letter));
+                        String.format("data\\symbols_to_recognize_csv\\en\\%s.csv",
+                                UtilsEncode.toRuntimeCharset(letter)));
 
         List<int[]> toRecognizeFormatted = Format.frameExtendPattern(toRecognize);
 
@@ -109,7 +111,7 @@ public class APIUsecaseExamples {
                         formattedMatrices.get(matrixEntry.getKey()),
                         String.format(
                                 "data\\symbols_formatted_csv\\en\\%s.csv",
-                                matrixEntry.getKey()
+                                UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                         ), false, BitmapUtils.COLOR_256
                 );
             } catch (Exception ex) {
@@ -197,7 +199,7 @@ public class APIUsecaseExamples {
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
                                         "data\\symbols_formatted_csv\\en\\%s.csv",
-                                        matrixEntry.getKey()
+                                        UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
                     } catch (Exception ex) {
@@ -345,7 +347,7 @@ public class APIUsecaseExamples {
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
                                         "data\\symbols_formatted_csv\\en\\%s.csv",
-                                        matrixEntry.getKey()
+                                        UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
                     } catch (Exception ex) {

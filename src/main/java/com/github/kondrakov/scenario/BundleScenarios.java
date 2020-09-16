@@ -12,6 +12,7 @@ import com.github.kondrakov.recognize.NeuralRecognizer;
 import com.github.kondrakov.recognize.Recognizer;
 import com.github.kondrakov.textfinder.SourceCutter;
 import com.github.kondrakov.utils.UtilsConv;
+import com.github.kondrakov.utils.UtilsEncode;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class BundleScenarios {
                         mergedMap.get(matrixEntry.getKey()),
                         String.format(
                                 "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
-                                matrixEntry.getKey()
+                                UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                         ),
                         false,
                         colorMode);
@@ -121,7 +122,7 @@ public class BundleScenarios {
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
                                         "data\\symbols_formatted_csv\\en\\%s.csv",
-                                        matrixEntry.getKey()
+                                        UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
                     } catch (Exception ex) {
@@ -164,7 +165,7 @@ public class BundleScenarios {
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
                                         "data\\symbols_formatted_csv\\en\\%s.csv",
-                                        matrixEntry.getKey()
+                                        UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
                     } catch (Exception ex) {

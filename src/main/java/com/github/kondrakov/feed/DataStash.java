@@ -1,6 +1,7 @@
 package com.github.kondrakov.feed;
 
 import com.github.kondrakov.parser.BitmapParser;
+import com.github.kondrakov.utils.UtilsEncode;
 
 import java.util.*;
 
@@ -33,14 +34,14 @@ public class DataStash {
         try {
             for (int i = 0; i < alphabet.size(); i++) {
                 if (FROM_BMP_MODE.equals(sourceMode)) {
-                    stashBMPAsCSV(String.format(inputPath, alphabet.get(i)),
-                            String.format(outputPath, alphabet.get(i)),
+                    stashBMPAsCSV(String.format(inputPath, UtilsEncode.toRuntimeCharset(alphabet.get(i))),
+                            String.format(outputPath, UtilsEncode.toRuntimeCharset(alphabet.get(i))),
                             true,
                             true,
                             colorMode);
                     etalonModelMatrices.put(alphabet.get(i),
                             CSVProcessorIO.loadMatrixFromCSVFile(
-                                    String.format(outputPath, alphabet.get(i))
+                                    String.format(outputPath, UtilsEncode.toRuntimeCharset(alphabet.get(i)))
                             )
                     );
                 }
@@ -48,7 +49,7 @@ public class DataStash {
                 if (FROM_CSV_MODE.equals(sourceMode)) {
                     etalonModelMatrices.put(alphabet.get(i),
                             CSVProcessorIO.loadMatrixFromCSVFile(
-                                    String.format(inputPath, alphabet.get(i))
+                                    String.format(inputPath, UtilsEncode.toRuntimeCharset(alphabet.get(i)))
                             )
                     );
                 }
