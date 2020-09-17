@@ -13,6 +13,7 @@ import com.github.kondrakov.recognize.Recognizer;
 import com.github.kondrakov.textfinder.SourceCutter;
 import com.github.kondrakov.utils.UtilsConv;
 import com.github.kondrakov.utils.UtilsEncode;
+import org.apache.pdfbox.rendering.ImageType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -79,11 +80,16 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios extractStringsToRecognize(String pathPdf, String pathBmp,
-                                                     Rectangle bounds, String colorMode,
-                                                     String cutMode, int spaceSymbolTolerance, int averageWidth) {
-        IFeeder feeder = new PDFBoxFeeder();
+    public BundleScenarios getBmpFromPdfFormat(String pathPdf, String pathBmp,
+                                               int pageIndex, float dpi, ImageType imageType) {
+        IFeeder feeder = new PDFBoxFeeder(pageIndex, dpi, imageType);
         feeder.feed(pathPdf, pathBmp);
+        return this;
+    }
+
+    public BundleScenarios extractStringsToRecognize(String pathBmp, Rectangle bounds,
+                                                     String colorMode, String cutMode,
+                                                     int spaceSymbolTolerance, int averageWidth) {
 
         List<int[]> blockMatrix = SourceCutter.cutCropByDims(pathBmp, bounds, colorMode);
 

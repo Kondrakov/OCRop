@@ -15,6 +15,7 @@ import com.github.kondrakov.textfinder.SourceCutter;
 import com.github.kondrakov.utils.UtilsConv;
 import com.github.kondrakov.utils.UtilsEncode;
 import com.github.kondrakov.view.VisualDebugForm;
+import org.apache.pdfbox.rendering.ImageType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -375,8 +376,11 @@ public class APIUsecaseExamples {
                         "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
+                getBmpFromPdfFormat("data\\pages_to_recognize\\ru_bold_courier_new_sign.pdf",
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign.bmp",
+                        0, 150, ImageType.GRAY
+                        ).
                 extractStringsToRecognize(
-                        "data\\pages_to_recognize\\ru_bold_courier_new_sign.pdf",
                         "data\\pages_to_recognize\\ru_bold_courier_new_sign.bmp",
                         new Rectangle(182, 150, 390, 190),
                         BitmapUtils.COLOR_256,
@@ -402,8 +406,10 @@ public class APIUsecaseExamples {
                         "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
+                getBmpFromPdfFormat("data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
+                        0, 150, ImageType.GRAY).
                 extractStringsToRecognize(
-                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
                         "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
                         new Rectangle(182, 150, 325, 190),
                         BitmapUtils.COLOR_256,
@@ -429,8 +435,10 @@ public class APIUsecaseExamples {
                         "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
+                getBmpFromPdfFormat("data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
+                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
+                        0, 150, ImageType.GRAY).
                 extractStringsToRecognize(
-                        "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.pdf",
                         "data\\pages_to_recognize\\ru_bold_courier_new_sign_long.bmp",
                         new Rectangle(182, 150, 325, 190),
                         BitmapUtils.COLOR_256,
