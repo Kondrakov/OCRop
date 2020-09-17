@@ -41,6 +41,7 @@ public class BundleScenarios {
 
     public BundleScenarios loadAndMergeAlphabetModel(String basePathFrom1, String basePathTo1,
                                                      String basePathFrom2, String basePathTo2,
+                                                     String pathOutputMerged,
                                              List<String> alphabetRange, String sourceMode,
                                              String colorMode) {
         DataStash.prepareEtalonModelsForMerge(
@@ -64,7 +65,7 @@ public class BundleScenarios {
                 CSVProcessorIO.writeMatrixToCSVFile(
                         mergedMap.get(matrixEntry.getKey()),
                         String.format(
-                                "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
+                                pathOutputMerged,
                                 UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                         ),
                         false,
@@ -104,7 +105,7 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios recognize() {
+    public BundleScenarios recognize(String pathToSaveEtalonAlphabetMatrices) {
         if (etalonMatrices == null) {
             etalonMatrices = DataStash.getLetterMatricesCollection();
         }
@@ -121,7 +122,7 @@ public class BundleScenarios {
                         CSVProcessorIO.writeMatrixToCSVFile(
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
-                                        "data\\symbols_formatted_csv\\en\\%s.csv",
+                                        pathToSaveEtalonAlphabetMatrices,
                                         UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
@@ -147,7 +148,7 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios recognizeSimple() {
+    public BundleScenarios recognizeSimple(String pathToSaveEtalonAlphabetMatrices) {
         if (etalonMatrices == null) {
             etalonMatrices = DataStash.getLetterMatricesCollection();
         }
@@ -164,7 +165,7 @@ public class BundleScenarios {
                         CSVProcessorIO.writeMatrixToCSVFile(
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
-                                        "data\\symbols_formatted_csv\\en\\%s.csv",
+                                        pathToSaveEtalonAlphabetMatrices,
                                         UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );

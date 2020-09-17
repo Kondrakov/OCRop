@@ -383,7 +383,7 @@ public class APIUsecaseExamples {
                         SourceCutter.NO_GAP_SEARCH_CUT,
                         4, 19
                 ).
-                recognize().
+                recognize("data\\symbols_formatted_csv\\en\\%s.csv").
                 getRecognized();
         System.out.println(recognizeString);
         System.out.println("answer ==>" + recognizeString);
@@ -399,6 +399,7 @@ public class APIUsecaseExamples {
                         "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
                         "data\\bmp_source_models\\ru_courier_new_bold_left_cut\\%s.bmp",
                         "data\\csv_source_models\\ru_courier_new_bold_left_cut\\%s.csv",
+                        "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
                 extractStringsToRecognize(
@@ -409,7 +410,7 @@ public class APIUsecaseExamples {
                         SourceCutter.NO_GAP_SEARCH_CUT,
                         4, 19
                 ).
-                recognizeSimple().
+                recognizeSimple("data\\symbols_formatted_csv\\en\\%s.csv").
                 getRecognized();
         System.out.println(recognizeString);
         System.out.println("answer ==>" + recognizeString);
@@ -425,6 +426,7 @@ public class APIUsecaseExamples {
                         "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
                         "data\\bmp_source_models\\ru_courier_new_bold_left_cut\\%s.bmp",
                         "data\\csv_source_models\\ru_courier_new_bold_left_cut\\%s.csv",
+                        "data\\csv_source_models\\ru_courier_new_bold_merged\\%s.csv",
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
                 extractStringsToRecognize(
