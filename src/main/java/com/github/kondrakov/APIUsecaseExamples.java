@@ -165,7 +165,7 @@ public class APIUsecaseExamples {
 
         // 4. Cut stringLetterMatrices from stringMatrix:
         List<List<int[]>> stringLetterMatrices =
-                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0);
+                SourceCutter.simpleCutString(stringMatrixInverted, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0, "data\\strings_to_recognize\\l%s.csv");
         try {
             for (int i = 0; i < stringLetterMatrices.size(); i++) {
                 CSVProcessorIO.writeMatrixToCSVFile(stringLetterMatrices.get(i),
@@ -231,7 +231,7 @@ public class APIUsecaseExamples {
             System.out.println(ex);
         }
         List<int[]> stringInput = CSVProcessorIO.loadMatrixFromCSVFile("data\\strings_to_recognize\\string_to_cut.csv");
-        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0);
+        SourceCutter.simpleCutString(stringInput, SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0, "data\\strings_to_recognize\\l%s.csv");
     }
 
     public void exampleCropCutByDimensions() {
@@ -310,7 +310,7 @@ public class APIUsecaseExamples {
         List<List<int[]>> stringLetterMatrices = new ArrayList<>();
         for (int i = 0; i < stringsFromBlock.size(); i++) {
             stringLetterMatrices.addAll(
-                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0)
+                    SourceCutter.simpleCutString(stringsFromBlock.get(i), SourceCutter.SIMPLE_CUT, BitmapUtils.COLOR_256, 5, 0, "data\\strings_to_recognize\\l%s.csv")
             );
         }
 
@@ -385,7 +385,8 @@ public class APIUsecaseExamples {
                         new Rectangle(182, 150, 390, 190),
                         BitmapUtils.COLOR_256,
                         SourceCutter.NO_GAP_SEARCH_CUT,
-                        4, 19
+                        4, 19,
+                        "data\\strings_to_recognize\\l%s.csv"
                 ).
                 recognize("data\\symbols_formatted_csv\\en\\%s.csv").
                 getRecognized();
@@ -414,7 +415,8 @@ public class APIUsecaseExamples {
                         new Rectangle(182, 150, 325, 190),
                         BitmapUtils.COLOR_256,
                         SourceCutter.NO_GAP_SEARCH_CUT,
-                        4, 19
+                        4, 19,
+                        "data\\strings_to_recognize\\l%s.csv"
                 ).
                 recognizeSimple("data\\symbols_formatted_csv\\en\\%s.csv").
                 getRecognized();
@@ -443,7 +445,8 @@ public class APIUsecaseExamples {
                         new Rectangle(182, 150, 325, 190),
                         BitmapUtils.COLOR_256,
                         SourceCutter.NO_GAP_SEARCH_CUT,
-                        4, 19
+                        4, 19,
+                        "data\\strings_to_recognize\\l%s.csv"
                 ).
                 cornerizeModels(25, 25).
                 neuralRecognize().

@@ -57,14 +57,4 @@ public class OCRRecognize {
         //deprecated method to be moved, refactored or changed, now see Recognizer instead
         return "";
     }
-
-    //calibration?:
-    //add or remove 0 rows or columns in input data for strict matching
-    //can be useful for not strict matching
-
-    //do not calibration, do shifting by first not 0 point occasion in rows
-    @Deprecated
-    private void calibrate() {
-        //todo to be moved from this class or refactor this class entirely
-    }
 }

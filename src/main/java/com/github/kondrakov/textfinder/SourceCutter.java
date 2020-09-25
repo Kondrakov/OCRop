@@ -55,7 +55,7 @@ public class SourceCutter {
     }
 
     //todo feature recognizing the font via neural net to choose mode for cutting letters
-    public static List<List<int[]>> simpleCutString(List<int[]> rawString, String cuttingMode, String colorMode, int spaceSymbolTolerance, int averageWidth) {
+    public static List<List<int[]>> simpleCutString(List<int[]> symbolCharRow, String cuttingMode, String colorMode, int spaceSymbolTolerance, int averageWidth, String outputDebugPath) {
         boolean isGapExists = true;
         int gaps = 0;
         List<List<int[]>> string = new ArrayList<>();
@@ -63,14 +63,14 @@ public class SourceCutter {
         List<Integer> currentColumn;
         List<List<Integer>> currentLetterBuffer = new ArrayList<>();
 
-        for (int i = 0; i < rawString.get(0).length; i++) {
+        for (int i = 0; i < symbolCharRow.get(0).length; i++) {
             currentColumn = new ArrayList<>();
             isGapExists = true;
-            for (int j = 0; j < rawString.size(); j++) {
-                if (rawString.get(j)[i] != 0) {
+            for (int j = 0; j < symbolCharRow.size(); j++) {
+                if (symbolCharRow.get(j)[i] != 0) {
                     isGapExists = false;
                 }
-                currentColumn.add(rawString.get(j)[i]);
+                currentColumn.add(symbolCharRow.get(j)[i]);
             }
             if (!isGapExists) {
                 if (spaceSymbolTolerance < gaps) {
@@ -91,7 +91,7 @@ public class SourceCutter {
                     try {
                         // here inverted already, so set invertMode to false
                         CSVProcessorIO.writeMatrixToCSVFile(currentLetter,
-                                "data\\strings_to_recognize\\l" + string.size() + ".csv",
+                                String.format(outputDebugPath, gaps),
                                 false, colorMode);
                     } catch (Exception ex) {
                         System.out.println(ex);
@@ -117,15 +117,6 @@ public class SourceCutter {
                                                     (int)(k * width), (int)((k + 1) * width))
                                     );
                                 }
-                            }
-
-                            try {
-                                CSVProcessorIO.writeMatrixToCSVFile(extractedLetters.get(1),
-                                        "data\\teststring1.csv", false, BitmapUtils.COLOR_256);
-                                CSVProcessorIO.writeMatrixToCSVFile(extractedLetters.get(2),
-                                        "data\\teststring2.csv", false, BitmapUtils.COLOR_256);
-                            } catch (Exception ex) {
-                                System.out.println(ex);
                             }
                             string.addAll(extractedLetters);
                         }

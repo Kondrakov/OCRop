@@ -8,11 +8,6 @@ import java.util.Map;
 
 public class NeuralRecognizer {
 
-    /*public static void main(String[] args) {
-        initNet(25, 25);
-        createNet();
-    }*/
-
     private static int inputNodes;
     private static int hiddenNodes;
     private static int outputNodes;
@@ -32,13 +27,13 @@ public class NeuralRecognizer {
     }
 
     //w 25 h 25
-    public static void initNet(int inputNodesWidth, int inputNodesHeight) {
+    public static void initNet(int inputNodesWidth, int inputNodesHeight, int hiddenNodes, int outputNodes) {
         NeuralRecognizer.inputNodes = inputNodesWidth * inputNodesHeight;
         //NeuralRecognizer.hiddenNodes = 300;
-        NeuralRecognizer.hiddenNodes = 100;
-        NeuralRecognizer.outputNodes = 33;
+        NeuralRecognizer.hiddenNodes = hiddenNodes;
+        NeuralRecognizer.outputNodes = outputNodes;
 
-        NeuralRecognizer.targetSymbols = new String[33];
+        NeuralRecognizer.targetSymbols = new String[outputNodes];
         for (int i = 0; i < NeuralRecognizer.targetSymbols.length; i++) {
             NeuralRecognizer.targetSymbols[i] = Alphabet.getCurrentAlphabet().get(i);
         }

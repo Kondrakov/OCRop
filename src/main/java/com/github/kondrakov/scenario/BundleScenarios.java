@@ -89,7 +89,8 @@ public class BundleScenarios {
 
     public BundleScenarios extractStringsToRecognize(String pathBmp, Rectangle bounds,
                                                      String colorMode, String cutMode,
-                                                     int spaceSymbolTolerance, int averageWidth) {
+                                                     int spaceSymbolTolerance, int averageWidth,
+                                                     String outputDebugPath) {
 
         List<int[]> blockMatrix = SourceCutter.cutCropByDims(pathBmp, bounds, colorMode);
 
@@ -105,7 +106,7 @@ public class BundleScenarios {
         toRecognizeMatrices = new ArrayList<>();
         for (int i = 0; i < stringsFromBlock.size(); i++) {
             toRecognizeMatrices.addAll(
-                    SourceCutter.simpleCutString(stringsFromBlock.get(i), cutMode, colorMode, spaceSymbolTolerance, averageWidth)
+                    SourceCutter.simpleCutString(stringsFromBlock.get(i), cutMode, colorMode, spaceSymbolTolerance, averageWidth, outputDebugPath)
             );
         }
         return this;
@@ -235,14 +236,17 @@ public class BundleScenarios {
 
     public BundleScenarios neuralTrain(
             String inputToHiddenWeightsPathSave,
-            String hiddenToOutputPathSave
-       ) {
+            String hiddenToOutputPathSave,
+            int hiddenNodes,
+            int outputNodes,
+            int overTrainIterations
+    ) {
         this.inputToHiddenSourcePath = inputToHiddenWeightsPathSave;
         this.hiddenToOutputSourcePath = hiddenToOutputPathSave;
 
-        NeuralRecognizer.initNet(w, h);
+        NeuralRecognizer.initNet(w, h, hiddenNodes, outputNodes);
         NeuralRecognizer.createNet();
-        NeuralRecognizer.testSet(letterMatricesCollectionsThis, 100);
+        NeuralRecognizer.testSet(letterMatricesCollectionsThis, overTrainIterations);
 
         try {
             CSVProcessorIO.writeMatrixToCSVFile(
