@@ -1,10 +1,7 @@
 package com.github.kondrakov.scenario;
 
 import com.github.kondrakov.approximate.TrainSet;
-import com.github.kondrakov.feed.CSVProcessorIO;
-import com.github.kondrakov.feed.DataStash;
-import com.github.kondrakov.feed.IFeeder;
-import com.github.kondrakov.feed.PDFBoxFeeder;
+import com.github.kondrakov.feed.*;
 import com.github.kondrakov.format.Format;
 import com.github.kondrakov.model.Alphabet;
 import com.github.kondrakov.parser.BitmapUtils;
@@ -105,9 +102,17 @@ public class BundleScenarios {
 
         toRecognizeMatrices = new ArrayList<>();
         for (int i = 0; i < stringsFromBlock.size(); i++) {
-            toRecognizeMatrices.addAll(
-                    SourceCutter.simpleCutString(stringsFromBlock.get(i), cutMode, colorMode, spaceSymbolTolerance, averageWidth, outputDebugPath)
-            );
+            if (SourceCutter.NO_GAP_SEARCH_CUT.equals(cutMode)) {
+                toRecognizeMatrices.addAll(
+                        SourceCutter.simpleCutString(stringsFromBlock.get(i), cutMode, colorMode, spaceSymbolTolerance, averageWidth, outputDebugPath)
+                );
+            } else if (SourceCutter.NO_CHECK_GAP_CUT.equals(cutMode)) {
+                //todo check cut into strings compare with simpleCutString (it is compatible with block cutting into strings?)
+                toRecognizeMatrices.addAll(
+                        SourceCutter.simpleCutStringNoGapCheck(stringsFromBlock.get(i), cutMode, colorMode, spaceSymbolTolerance, averageWidth)
+                );
+            }
+
         }
         return this;
     }

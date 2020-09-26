@@ -1,13 +1,15 @@
 package com.github.kondrakov.textfinder;
 
 
+import com.github.kondrakov.Experimental;
+import com.github.kondrakov.approximate.TrainSet;
 import com.github.kondrakov.feed.CSVProcessorIO;
 import com.github.kondrakov.parser.BitmapParser;
 import com.github.kondrakov.parser.BitmapUtils;
+import com.github.kondrakov.utils.UtilsConv;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 
 public class SourceCutter {
@@ -15,6 +17,7 @@ public class SourceCutter {
     public final static String SIMPLE_CUT = "simple_cut";
     public final static String PATH_FIND_CUT = "path_find_cut";
     public final static String NO_GAP_SEARCH_CUT = "no_gap_search_cut";
+    public final static String NO_CHECK_GAP_CUT = "no_check_gap_cut";
 
     public SourceCutter() {
         // todo search first pixel?
@@ -133,6 +136,38 @@ public class SourceCutter {
             }
         }
         return string;
+    }
+
+    @Experimental
+    public static List<List<int[]>> simpleCutStringNoGapCheck(List<int[]> symbolCharRow, String cuttingMode, String colorMode, int spaceSymbolTolerance, int averageWidth) {
+        List<int[]> trimmedSymbolRow = UtilsConv.cloneMatrixData(symbolCharRow);
+        if (SourceCutter.NO_CHECK_GAP_CUT.equals(cuttingMode)) {
+            trimmedSymbolRow = TrainSet.trimLeftBlankSpace(trimmedSymbolRow);
+            trimmedSymbolRow = TrainSet.trimRightBlankSpace(trimmedSymbolRow);
+
+            List<List<int[]>> extractedLetters = new ArrayList<>();
+            int discreteWidthCounter;
+            int discreteIndexCounter;
+            for (int j = 0; j < trimmedSymbolRow.size(); j++) {
+                discreteWidthCounter = 0;
+                discreteIndexCounter = 0;
+                while (discreteWidthCounter <= trimmedSymbolRow.get(j).length) {
+                    if (j == 0) {
+                        extractedLetters.add(new ArrayList<>());
+                    }
+                    extractedLetters.get(discreteIndexCounter).add(
+                            Arrays.copyOfRange(trimmedSymbolRow.get(j),
+                                    (int)(discreteWidthCounter),
+                                    (int)(discreteWidthCounter + averageWidth)
+                            )
+                    );
+                    discreteWidthCounter += averageWidth;
+                    discreteIndexCounter++;
+                }
+            }
+            return extractedLetters;
+        }
+        return new ArrayList<>();
     }
 
     public static List<List<int[]>> simpleCutBlockIntoStrings(List<int[]> rawBlock) {

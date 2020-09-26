@@ -8,7 +8,7 @@ public class TrainSet {
 
     public static List<int[]> mergeOverlappingWeights(List<int[]> baseInput, List<int[]> addMergeInput) {
         List<int[]> baseInputModif;
-        baseInputModif = trimLeftBlancSpace(baseInput);
+        baseInputModif = trimLeftBlankSpace(baseInput);
         baseInputModif = alignInputByY(baseInputModif, addMergeInput);
         baseInputModif = trimRightCanvasToFit(baseInputModif, addMergeInput);
 
@@ -108,7 +108,7 @@ public class TrainSet {
         return input.size();
     }
 
-    public static List<int[]> trimLeftBlancSpace(List<int[]> input) {
+    public static List<int[]> trimLeftBlankSpace(List<int[]> input) {
         List<int[]> output = new ArrayList<>();
         int searchMinOffset = input.get(0).length - 1;
         int searchMinOffsetCurrent;
@@ -121,6 +121,11 @@ public class TrainSet {
                 }
             }
             searchMinOffset = Integer.min(searchMinOffset, searchMinOffsetCurrent);
+            //todo add optimized right break logic here
+            /*if (searchMinOffsetCurrent > -1) {
+                searchMinOffset = Integer.min(searchMinOffset, searchMinOffsetCurrent);
+                break;
+            }*/
         }
         for (int i = 0; i < input.size(); i++) {
             output.add(
@@ -134,10 +139,72 @@ public class TrainSet {
         return output;
     }
 
+    public static List<int[]> trimRightBlankSpace(List<int[]> input) {
+        List<int[]> output = new ArrayList<>();
+        int searchMaxOffset = 0;
+        int searchMaxOffsetCurrent = -1;
+        for (int i = 0; i < input.size(); i++) {
+            searchMaxOffsetCurrent = 0;
+            for (int j = input.get(i).length - 1; j >= 0; j--) {
+                if (input.get(i)[j] > 0) {
+                    searchMaxOffsetCurrent = j;
+                    break;
+                }
+            }
+            searchMaxOffset = Integer.max(searchMaxOffset, searchMaxOffsetCurrent);
+            if (searchMaxOffset > -1) {
+                break;
+            }
+        }
+        for (int i = 0; i < input.size(); i++) {
+            output.add(
+                    Arrays.copyOfRange(
+                            input.get(i),
+                            0,
+                            searchMaxOffset
+                    )
+            );
+        }
+        return output;
+    }
+
+    public static List<int[]> trimUpperBlankSpace(List<int[]> input) {
+        int startCutInd = -1;
+        for (int i = 0; i < input.size(); i++) {
+            for (int j = 0; j < input.get(i).length; j++) {
+                if (input.get(i)[j] > 0) {
+                    if (startCutInd == -1)
+                        startCutInd = i;
+                    break;
+                }
+            }
+        }
+        if (startCutInd == -1)
+            startCutInd = 0;
+        return input.subList(startCutInd, input.size() - 1);
+    }
+
+    public static List<int[]> trimLowerBlankSpace(List<int[]> input) {
+        List<int[]> output = new ArrayList<>();
+        boolean flagTrim = false;
+        for (int i = input.size() - 1; i >= 0; i--) {
+            flagTrim = true;
+            for (int j = 0; j < input.get(i).length; j++) {
+                if (input.get(i)[j] > 0) {
+                    flagTrim = false;
+                }
+            }
+            if (!flagTrim) {
+                output.add(0, input.get(i));
+            }
+        }
+        return output;
+    }
+
     ////////////////////////////////
 
     public static List<int[]> cornerizeTrimModel(List<int[]> input, int width, int height) {
-        List<int[]> output = trimLeftBlancSpace(input);
+        List<int[]> output = trimLeftBlankSpace(input);
         output = trimRightCanvasToFit(output, width);
         int startCutInd = -1;
         for (int i = 0; i < output.size(); i++) {
