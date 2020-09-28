@@ -28,12 +28,16 @@ public class BundleScenarios {
         return this;
     }
 
+    private Map<String, List<int[]>> letterMatricesCollectionThis;
     private List<Map<String, List<int[]>>> letterMatricesCollectionsThis;
 
     public BundleScenarios loadAlphabetModel(String basePathFrom, String basePathTo,
+                                             String createMode,
                                              List<String> alphabetRange, String sourceMode,
                                              String colorMode) {
-        DataStash.prepareEtalonModels(basePathFrom, basePathTo, alphabetRange, sourceMode, colorMode);
+        DataStash.prepareReferenceModels(basePathFrom, basePathTo, createMode, alphabetRange, sourceMode, colorMode);
+        letterMatricesCollectionThis = DataStash.getLetterMatricesCollection(); //used in single collection only 'NEW' mode
+        letterMatricesCollectionsThis = DataStash.getLetterMatricesCollections(); //used in multi collections only 'ADD' mode
         return this;
     }
 
@@ -42,12 +46,12 @@ public class BundleScenarios {
                                                      String pathOutputMerged,
                                              List<String> alphabetRange, String sourceMode,
                                              String colorMode) {
-        DataStash.prepareEtalonModels(
+        DataStash.prepareReferenceModels(
                 basePathFrom1, basePathTo1,
                 basePathFrom2, basePathTo2,
                 alphabetRange, sourceMode, colorMode);
 
-        List<Map<String, List<int[]>>> letterMatricesCollections =  DataStash.getLetterMatricesCollections();
+        List<Map<String, List<int[]>>> letterMatricesCollections = DataStash.getLetterMatricesCollections();
         letterMatricesCollectionsThis = letterMatricesCollections;
         Map<String, List<int[]>> mergedMap = new HashMap<>();
         for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollections.get(0).entrySet()) {
@@ -73,20 +77,7 @@ public class BundleScenarios {
             }
 
         }
-        etalonMatrices = mergedMap;
-        return this;
-    }
-
-    public BundleScenarios loadAlphabetModel(String basePathFrom1, String basePathTo1,
-                                                     String basePathFrom2, String basePathTo2,
-                                                     List<String> alphabetRange, String sourceMode,
-                                                     String colorMode) {
-        DataStash.prepareEtalonModels(
-                basePathFrom1, basePathTo1,
-                basePathFrom2, basePathTo2,
-                alphabetRange, sourceMode, colorMode);
-        List<Map<String, List<int[]>>> letterMatricesCollections =  DataStash.getLetterMatricesCollections();
-        letterMatricesCollectionsThis = letterMatricesCollections;
+        referenceMatrices = mergedMap;
         return this;
     }
 
@@ -130,15 +121,15 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios recognize(String pathToSaveEtalonAlphabetMatrices) {
-        if (etalonMatrices == null) {
-            etalonMatrices = DataStash.getLetterMatricesCollection();
+    public BundleScenarios recognize(String pathToSaveReferenceAlphabetMatrices) {
+        if (referenceMatrices == null) {
+            referenceMatrices = DataStash.getLetterMatricesCollection();
         }
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
                 Map<String, List<int[]>> formattedMatrices = new HashMap<>();
-                for (Map.Entry<String, List<int[]>> matrixEntry : etalonMatrices.entrySet()) {
+                for (Map.Entry<String, List<int[]>> matrixEntry : referenceMatrices.entrySet()) {
                     formattedMatrices.put(matrixEntry.getKey(),
                             Format.frameToPattern(
                                     matrixEntry.getValue(), toRecognizeMatrices.get(i)
@@ -147,7 +138,7 @@ public class BundleScenarios {
                         CSVProcessorIO.writeMatrixToCSVFile(
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
-                                        pathToSaveEtalonAlphabetMatrices,
+                                        pathToSaveReferenceAlphabetMatrices,
                                         UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
@@ -173,15 +164,15 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios recognizeSimple(String pathToSaveEtalonAlphabetMatrices) {
-        if (etalonMatrices == null) {
-            etalonMatrices = DataStash.getLetterMatricesCollection();
+    public BundleScenarios recognizeSimple(String pathToSaveReferenceAlphabetMatrices) {
+        if (referenceMatrices == null) {
+            referenceMatrices = DataStash.getLetterMatricesCollection();
         }
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
                 Map<String, List<int[]>> formattedMatrices = new HashMap<>();
-                for (Map.Entry<String, List<int[]>> matrixEntry : etalonMatrices.entrySet()) {
+                for (Map.Entry<String, List<int[]>> matrixEntry : referenceMatrices.entrySet()) {
                     formattedMatrices.put(matrixEntry.getKey(),
                             Format.frameToPattern(
                                     matrixEntry.getValue(), toRecognizeMatrices.get(i)
@@ -190,7 +181,7 @@ public class BundleScenarios {
                         CSVProcessorIO.writeMatrixToCSVFile(
                                 formattedMatrices.get(matrixEntry.getKey()),
                                 String.format(
-                                        pathToSaveEtalonAlphabetMatrices,
+                                        pathToSaveReferenceAlphabetMatrices,
                                         UtilsEncode.toRuntimeCharset(matrixEntry.getKey())
                                 ), false, BitmapUtils.COLOR_256
                         );
@@ -212,7 +203,7 @@ public class BundleScenarios {
     }
 
     private List<List<int[]>> toRecognizeMatrices;
-    private Map<String, List<int[]>> etalonMatrices;
+    private Map<String, List<int[]>> referenceMatrices;
 
     private String recognized;
     public String getRecognized() {

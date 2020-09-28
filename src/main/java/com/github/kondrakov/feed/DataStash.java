@@ -10,27 +10,39 @@ public class DataStash {
     public static String FROM_CSV_MODE = "from_csv_mode";
     public static String FROM_BMP_MODE = "from_bmp_mode";
 
+    public static String NEW = "new";
+    public static String ADD = "add";
+
     //todo rewrite colorMode and outputPath must not required in csv
-    public static void prepareEtalonModels(String inputPath, String outputPath,
-                                           List<String> alphabet, String sourceMode, String colorMode) {
-        letterMatricesCollection = prepareEtalonModel(inputPath, outputPath, alphabet, sourceMode, colorMode);
+    public static void prepareReferenceModels(String inputPath, String outputPath, String createMode,
+                                              List<String> alphabet, String sourceMode, String colorMode) {
+        if (DataStash.NEW.equals(createMode)) {
+            letterMatricesCollection = prepareReferenceModel(inputPath, outputPath, alphabet, sourceMode, colorMode);
+        } else if (DataStash.ADD.equals(createMode)) {
+            if (letterMatricesCollections == null) {
+                letterMatricesCollections = new ArrayList<>();
+            }
+            letterMatricesCollections.add(
+                    prepareReferenceModel(inputPath, outputPath, alphabet, sourceMode, colorMode)
+            );
+        }
     }
 
-    public static void prepareEtalonModels(String inputPath1, String outputPath1,
-                                           String inputPath2, String outputPath2,
-                                           List<String> alphabet, String sourceMode, String colorMode) {
+    public static void prepareReferenceModels(String inputPath1, String outputPath1,
+                                              String inputPath2, String outputPath2,
+                                              List<String> alphabet, String sourceMode, String colorMode) {
         letterMatricesCollections = new ArrayList<>();
         letterMatricesCollections.add(
-                prepareEtalonModel(inputPath1, outputPath1, alphabet, sourceMode, colorMode)
+                prepareReferenceModel(inputPath1, outputPath1, alphabet, sourceMode, colorMode)
         );
         letterMatricesCollections.add(
-                prepareEtalonModel(inputPath2, outputPath2, alphabet, sourceMode, colorMode)
+                prepareReferenceModel(inputPath2, outputPath2, alphabet, sourceMode, colorMode)
         );
     }
 
-    public static HashMap<String, List<int[]>> prepareEtalonModel(String inputPath, String outputPath,
-                                           List<String> alphabet, String sourceMode, String colorMode) {
-        HashMap<String, List<int[]>> etalonModelMatrices = new HashMap<>();
+    public static HashMap<String, List<int[]>> prepareReferenceModel(String inputPath, String outputPath,
+                                                     List<String> alphabet, String sourceMode, String colorMode) {
+        HashMap<String, List<int[]>> referenceModelMatrices = new HashMap<>();
         try {
             for (int i = 0; i < alphabet.size(); i++) {
                 if (FROM_BMP_MODE.equals(sourceMode)) {
@@ -39,7 +51,7 @@ public class DataStash {
                             true,
                             true,
                             colorMode);
-                    etalonModelMatrices.put(alphabet.get(i),
+                    referenceModelMatrices.put(alphabet.get(i),
                             CSVProcessorIO.loadMatrixFromCSVFile(
                                     String.format(outputPath, UtilsEncode.toRuntimeCharset(alphabet.get(i)))
                             )
@@ -47,7 +59,7 @@ public class DataStash {
                 }
 
                 if (FROM_CSV_MODE.equals(sourceMode)) {
-                    etalonModelMatrices.put(alphabet.get(i),
+                    referenceModelMatrices.put(alphabet.get(i),
                             CSVProcessorIO.loadMatrixFromCSVFile(
                                     String.format(inputPath, UtilsEncode.toRuntimeCharset(alphabet.get(i)))
                             )
@@ -57,7 +69,7 @@ public class DataStash {
         } catch (Exception ex) {
             System.out.println("exeption: " + ex);
         }
-        return etalonModelMatrices;
+        return referenceModelMatrices;
     }
 
     private static List<Map<String, List<int[]>>> letterMatricesCollections;

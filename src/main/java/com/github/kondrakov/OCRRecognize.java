@@ -7,7 +7,7 @@ public class OCRRecognize {
 
     private List<List<int[]>> inputStringToRecognize;
 
-    private Map<String, List<int[]>> etalonMatrices;
+    private Map<String, List<int[]>> referenceMatrices;
 
     public OCRRecognize() {
     }
@@ -26,10 +26,10 @@ public class OCRRecognize {
     public String recognize(List<int[]> recognizeInputMatrix) {
         //deprecated method to be moved, refactored or changed, now see Recognizer instead
         //todo must be changed, debug stub:
-        this.etalonMatrices = new HashMap<>();
-        this.etalonMatrices.put("o", recognizeInputMatrix);
+        this.referenceMatrices = new HashMap<>();
+        this.referenceMatrices.put("o", recognizeInputMatrix);
 
-        for (Entry matrixEntry:etalonMatrices.entrySet()) {
+        for (Entry matrixEntry: referenceMatrices.entrySet()) {
             if (match(recognizeInputMatrix, (ArrayList) matrixEntry.getValue())) {
                 return matrixEntry.getKey().toString();
             }
@@ -38,11 +38,11 @@ public class OCRRecognize {
     }
 
     @Deprecated
-    private boolean match(List<int[]> recognizeInputMatrix, List<int[]> etalonMatrix) {
+    private boolean match(List<int[]> recognizeInputMatrix, List<int[]> referenceMatrix) {
         //deprecated method to be moved, refactored or changed, now see Recognizer instead
-        for (int i = 0; i < etalonMatrix.size(); i++) {
-            for (int j = 0; j < etalonMatrix.get(i).length; j++) {
-                if (etalonMatrix.get(i)[j] != recognizeInputMatrix.get(i)[j]) {
+        for (int i = 0; i < referenceMatrix.size(); i++) {
+            for (int j = 0; j < referenceMatrix.get(i).length; j++) {
+                if (referenceMatrix.get(i)[j] != recognizeInputMatrix.get(i)[j]) {
                     System.out.println("valid"  +  " valid");
                 } else {
                     return false;
