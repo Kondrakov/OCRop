@@ -16,8 +16,8 @@ public class DataStash {
         letterMatricesCollection = prepareEtalonModel(inputPath, outputPath, alphabet, sourceMode, colorMode);
     }
 
-    public static void prepareEtalonModelsForMerge(String inputPath1, String outputPath1,
-                                                   String inputPath2, String outputPath2,
+    public static void prepareEtalonModels(String inputPath1, String outputPath1,
+                                           String inputPath2, String outputPath2,
                                            List<String> alphabet, String sourceMode, String colorMode) {
         letterMatricesCollections = new ArrayList<>();
         letterMatricesCollections.add(

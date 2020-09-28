@@ -42,7 +42,7 @@ public class BundleScenarios {
                                                      String pathOutputMerged,
                                              List<String> alphabetRange, String sourceMode,
                                              String colorMode) {
-        DataStash.prepareEtalonModelsForMerge(
+        DataStash.prepareEtalonModels(
                 basePathFrom1, basePathTo1,
                 basePathFrom2, basePathTo2,
                 alphabetRange, sourceMode, colorMode);
@@ -74,6 +74,19 @@ public class BundleScenarios {
 
         }
         etalonMatrices = mergedMap;
+        return this;
+    }
+
+    public BundleScenarios loadAlphabetModel(String basePathFrom1, String basePathTo1,
+                                                     String basePathFrom2, String basePathTo2,
+                                                     List<String> alphabetRange, String sourceMode,
+                                                     String colorMode) {
+        DataStash.prepareEtalonModels(
+                basePathFrom1, basePathTo1,
+                basePathFrom2, basePathTo2,
+                alphabetRange, sourceMode, colorMode);
+        List<Map<String, List<int[]>>> letterMatricesCollections =  DataStash.getLetterMatricesCollections();
+        letterMatricesCollectionsThis = letterMatricesCollections;
         return this;
     }
 
