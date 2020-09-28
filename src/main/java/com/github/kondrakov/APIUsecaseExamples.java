@@ -51,12 +51,14 @@ public class APIUsecaseExamples {
     //working example symbol bmp --> symbol recognized:
     public void exampleConveyorFromBmpSymbolToRecognize() {
         //alphabet data preparing: *.bmp => *.csv; *.csv => List<int[]> :
-        DataStash.prepareEtalonModels("data\\bmp_source_models\\%s.bmp",
+        DataStash.prepareReferenceModels("data\\bmp_source_models\\%s.bmp",
                 "data\\bmp_source_models\\%s.csv",
+                DataStash.NEW,
                 Alphabet.getAlphabetRU(),
                 DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_16);
         //alphabet data preparing: alphabet *.csv => List<int[]> :
-        DataStash.prepareEtalonModels("data\\csv_source_models\\%s.csv", "",
+        DataStash.prepareReferenceModels("data\\csv_source_models\\%s.csv", "",
+                DataStash.NEW,
                 Alphabet.getAlphabetRU(),
                 DataStash.FROM_CSV_MODE, BitmapUtils.COLOR_16);
         //get alphabet matrices from generated csv :
@@ -69,12 +71,14 @@ public class APIUsecaseExamples {
 
     //working example bmp letter --> csv letter --> letter recognized:
     public void exampleEnLetterToRecognize(String letter) {
-        DataStash.prepareEtalonModels("data\\bmp_source_models\\en\\%s.bmp",
+        DataStash.prepareReferenceModels("data\\bmp_source_models\\en\\%s.bmp",
                 "data\\csv_source_models\\en\\%s.csv",
+                DataStash.NEW,
                 Alphabet.getAlphabetEN(),
                 DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256);
         //alphabet data preparing: alphabet *.csv => List<int[]> :
-        DataStash.prepareEtalonModels("data\\csv_source_models\\en\\%s.csv", "",
+        DataStash.prepareReferenceModels("data\\csv_source_models\\en\\%s.csv", "",
+                DataStash.NEW,
                 Alphabet.getAlphabetEN(),
                 DataStash.FROM_CSV_MODE, BitmapUtils.COLOR_256);
 
@@ -127,12 +131,14 @@ public class APIUsecaseExamples {
 
     //working example pdf --> page bmp --> string csv --> string to com.github.kondrakov.recognize (List<List<int[]>>) --> String recognized:
     public void exampleFullConveyorFromPdfPageToRecognize() {
-        DataStash.prepareEtalonModels("data\\bmp_source_models\\en\\%s.bmp",
+        DataStash.prepareReferenceModels("data\\bmp_source_models\\en\\%s.bmp",
                 "data\\csv_source_models\\en\\%s.csv",
+                DataStash.NEW,
                 Alphabet.getAlphabetEN(),
                 DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256);
         //alphabet data preparing: alphabet *.csv => List<int[]> :
-        DataStash.prepareEtalonModels("data\\csv_source_models\\en\\%s.csv", "",
+        DataStash.prepareReferenceModels("data\\csv_source_models\\en\\%s.csv", "",
+                DataStash.NEW,
                 Alphabet.getAlphabetEN(),
                 DataStash.FROM_CSV_MODE, BitmapUtils.COLOR_256);
 
@@ -266,12 +272,14 @@ public class APIUsecaseExamples {
     }
 
     public void exampleMultilineInputSourceTextBlock() {
-        DataStash.prepareEtalonModels("data\\bmp_source_models\\en\\%s.bmp",
+        DataStash.prepareReferenceModels("data\\bmp_source_models\\en\\%s.bmp",
                 "data\\csv_source_models\\en\\%s.csv",
+                DataStash.NEW,
                 Alphabet.getAlphabetEN(),
                 DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256);
         //alphabet data preparing: alphabet *.csv => List<int[]> :
-        DataStash.prepareEtalonModels("data\\csv_source_models\\en\\%s.csv", "",
+        DataStash.prepareReferenceModels("data\\csv_source_models\\en\\%s.csv", "",
+                DataStash.NEW,
                 Alphabet.getAlphabetEN(),
                 DataStash.FROM_CSV_MODE, BitmapUtils.COLOR_256);
 
@@ -374,6 +382,7 @@ public class APIUsecaseExamples {
                         Alphabet.RU).
                 loadAlphabetModel("data\\bmp_source_models\\ru_courier_new_bold\\%s.bmp",
                         "data\\csv_source_models\\ru_courier_new_bold\\%s.csv",
+                        DataStash.NEW,
                         Alphabet.getAlphabetRU(),
                         DataStash.FROM_BMP_MODE, BitmapUtils.COLOR_256).
                 getBmpFromPdfFormat("data\\pages_to_recognize\\ru_bold_courier_new_sign.pdf",
