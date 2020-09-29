@@ -146,11 +146,6 @@ public class BundleScenarios {
                         System.out.println(ex);
                     }
                 }
-                /*answer.append(Recognizer.recognizeByPercent(formattedMatrices,
-                        Format.frameExtendPattern(toRecognizeMatrices.get(i)),
-                        BitmapUtils.COLOR_256
-                ));
-*/
                 answer.append(Recognizer.recognize(formattedMatrices,
                         Format.frameExtendPattern(toRecognizeMatrices.get(i))
                 ));
@@ -236,6 +231,34 @@ public class BundleScenarios {
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
                 toRecognizeMatricesModif.add(TrainSet.cornerizeTrimModel(toRecognizeMatrices.get(i),
+                        width, height));
+            }
+        }
+        toRecognizeMatrices = toRecognizeMatricesModif;
+        return this;
+    }
+
+    public BundleScenarios centerizeModels(int width, int height) {
+        w = width;
+        h = height;
+        Map<String, List<int[]>> currMap;
+        List<Map<String, List<int[]>>> currList = new ArrayList<>();
+
+        for (int i = 0; i < letterMatricesCollectionsThis.size(); i++) {
+            currMap = new HashMap<>();
+            for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollectionsThis.get(i).entrySet()) {
+                currMap.put(matrixEntry.getKey(), TrainSet.centerizeTrimModel(
+                        matrixEntry.getValue(), width, height
+                ));
+            }
+            currList.add(currMap);
+        }
+        letterMatricesCollectionsThis = currList;
+
+        toRecognizeMatricesModif = new ArrayList<>();
+        for (int i = 0; i < toRecognizeMatrices.size(); i++) {
+            if (toRecognizeMatrices.get(i).size() > 0) {
+                toRecognizeMatricesModif.add(TrainSet.centerizeTrimModel(toRecognizeMatrices.get(i),
                         width, height));
             }
         }

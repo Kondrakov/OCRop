@@ -142,17 +142,17 @@ public class TrainSet {
     public static List<int[]> trimRightBlankSpace(List<int[]> input) {
         List<int[]> output = new ArrayList<>();
         int searchMaxOffset = 0;
-        int searchMaxOffsetCurrent = -1;
+        int searchMaxOffsetCurrent;
         for (int i = 0; i < input.size(); i++) {
-            searchMaxOffsetCurrent = 0;
+            searchMaxOffsetCurrent = -1;
             for (int j = input.get(i).length - 1; j >= 0; j--) {
                 if (input.get(i)[j] > 0) {
                     searchMaxOffsetCurrent = j;
                     break;
                 }
             }
-            searchMaxOffset = Integer.max(searchMaxOffset, searchMaxOffsetCurrent);
-            if (searchMaxOffset > -1) {
+            if (searchMaxOffsetCurrent > -1) {
+                searchMaxOffset = Integer.max(searchMaxOffset, searchMaxOffsetCurrent);
                 break;
             }
         }
@@ -192,6 +192,7 @@ public class TrainSet {
             for (int j = 0; j < input.get(i).length; j++) {
                 if (input.get(i)[j] > 0) {
                     flagTrim = false;
+                    break;
                 }
             }
             if (!flagTrim) {
@@ -206,23 +207,44 @@ public class TrainSet {
     public static List<int[]> cornerizeTrimModel(List<int[]> input, int width, int height) {
         List<int[]> output = trimLeftBlankSpace(input);
         output = trimRightCanvasToFit(output, width);
-        int startCutInd = -1;
-        for (int i = 0; i < output.size(); i++) {
-            for (int j = 0; j < output.get(i).length; j++) {
-                if (output.get(i)[j] > 0) {
-                    if (startCutInd == -1)
-                        startCutInd = i;
-                    break;
-                }
-            }
-        }
-        output = output.subList(startCutInd, output.size() - 1);
+        output = trimUpperBlankSpace(output);
         if (output.size() > height) {
             output = output.subList(0, height - 1);
         }
         int[] stub = new int[output.get(0).length];
         while (output.size() < height) {
             output.add(stub);
+        }
+        return output;
+    }
+
+    public static List<int[]> centerizeTrimModel(List<int[]> input, int width, int height) {
+        List<int[]> outputTrimmed = trimLeftBlankSpace(input);
+        outputTrimmed = trimRightBlankSpace(outputTrimmed);
+        outputTrimmed = trimUpperBlankSpace(outputTrimmed);
+        outputTrimmed = trimLowerBlankSpace(outputTrimmed);
+
+        //todo some problem may occur when 24 bit bmp input image processed as 256 colors, check it:
+        if (outputTrimmed.size() == 0) {
+            System.out.println("problem with zero size List " + outputTrimmed.size());
+        }
+
+        int horizontalOffset = (width - outputTrimmed.get(0).length) / 2;
+        int verticalOffset = (height - outputTrimmed.size()) / 2;
+        List<int[]> output = new ArrayList<>();
+
+        for (int i = 0; i < height; i++) {
+            output.add(new int[width]);
+        }
+
+        for (int i = 0; i < outputTrimmed.size(); i++) {
+            for (int j = 0; j < outputTrimmed.get(i).length; j++) {
+                if (horizontalOffset + j >= 0 && horizontalOffset + j < width) {
+                    if (verticalOffset + i >= 0 && verticalOffset + i < height) {
+                        output.get(verticalOffset + i)[horizontalOffset + j] = outputTrimmed.get(i)[j];
+                    }
+                }
+            }
         }
         return output;
     }
