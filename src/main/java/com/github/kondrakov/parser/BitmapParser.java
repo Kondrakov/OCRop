@@ -19,6 +19,7 @@ public class BitmapParser {
         int byteCounterGlobal = 0;
         int startImageMatrixInfoOffset = 10;
         int startImageMatrixOffset = -1; //default, must be reinitialized in InputStream com.github.kondrakov.parser
+        int bitPerPixelInfoOffset = 29; //(can be 29-30)
         int widthImageMatrixInfo = 18;
         int imageMatrixInColorPointsWidth = -1; //default, must be reinitialized in InputStream com.github.kondrakov.parser
         int imageMatrixWidthWithTrailingBytes = -1;
@@ -40,6 +41,9 @@ public class BitmapParser {
                     if (nextReadByte != headerStartBMP_BM[byteCounterGlobal]) {
                         throw new IOException("File has not BitMap header, verify file please");
                     }
+                }
+                if (bitPerPixelInfoOffset - 1 == byteCounterGlobal) {
+                    BitmapUtils.assertRightColorMode(colorMode, nextReadByte);
                 }
                 if (startImageMatrixInfoOffset - 1 == byteCounterGlobal) {
                     //System.out.println(" + " + Integer.toHexString(nextReadByte));
@@ -174,7 +178,6 @@ public class BitmapParser {
         }
         return row;
     }
-
 
     public static void assembleBitmap(List<int[]> matrixInput, String headerPrototypeFileName, String outputFileName, String colorMode) {
         List<int[]> matrix = new LinkedList<>();

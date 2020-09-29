@@ -3,6 +3,7 @@ package com.github.kondrakov.parser;
 public class BitmapUtils {
     public final static String COLOR_16 = "color_16";
     public final static String COLOR_256 = "color_256";
+    public final static String COLOR_24_BIT = "color_24_bit";
 
     public void convertColorMode(String inutColorMode, String outputColorMode) {
         //todo implement convert from 16 colors to grayscale
@@ -26,6 +27,31 @@ public class BitmapUtils {
         if (COLOR_256.equals(colorMode)) {
             return 255;
         }
+        if (COLOR_24_BIT.equals(colorMode)) {
+            return 16777215;
+        }
         return 255;
+    }
+
+    public static boolean assertRightColorMode(String colorModeAsserting, int colorModeFromHeader) {
+        if (!colorModeAsserting.equals(recognizeColorMode(colorModeFromHeader))) {
+            System.out.println("WARNING!! Recognized color mode in bmp not match with asserted, please check file input color format");
+            System.out.println("Asserted: " + colorModeAsserting + ", from bmp header: " + recognizeColorMode(colorModeFromHeader));
+            return false;
+        }
+        return true;
+    }
+
+    public static String recognizeColorMode(int colorModeFromHeader) {
+        int colorsCount = (int) Math.pow(2, colorModeFromHeader);
+        if (colorsCount == 16) {
+            return BitmapUtils.COLOR_16;
+        } else if (colorsCount == 256) {
+            return BitmapUtils.COLOR_256;
+        } else if (colorsCount == 16777216) {
+            return BitmapUtils.COLOR_24_BIT;
+        } else {
+            return "Unrecognized color mode";
+        }
     }
 }
