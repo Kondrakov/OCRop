@@ -265,7 +265,9 @@ public class NeuralRecognizer {
                 maxTriggerFlag = i;
             }
         }
-        return Alphabet.getCurrentAlphabet().get(maxTriggerFlag);
+        return Alphabet.getCurrentMapping().get(
+                Alphabet.getCurrentAlphabet().get(maxTriggerFlag)
+        );
     }
 
     public static void loadTrained(String inputToHiddenSource,
