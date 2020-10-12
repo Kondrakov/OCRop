@@ -28,16 +28,16 @@ public class BundleScenarios {
         return this;
     }
 
-    private Map<String, List<int[]>> letterMatricesCollectionThis;
-    private List<Map<String, List<int[]>>> letterMatricesCollectionsThis;
+    private Map<String, List<int[]>> letterMatricesCollectionForTraining;
+    private List<Map<String, List<int[]>>> letterMatricesCollectionsForTraining;
 
     public BundleScenarios loadAlphabetModel(String basePathFrom, String basePathTo,
                                              String createMode,
                                              List<String> alphabetRange, String sourceMode,
                                              String colorMode) {
         DataStash.prepareReferenceModels(basePathFrom, basePathTo, createMode, alphabetRange, sourceMode, colorMode);
-        letterMatricesCollectionThis = DataStash.getLetterMatricesCollection(); //used in single collection only 'NEW' mode
-        letterMatricesCollectionsThis = DataStash.getLetterMatricesCollections(); //used in multi collections only 'ADD' mode
+        letterMatricesCollectionForTraining = DataStash.getLetterMatricesCollection(); //used in single collection only 'NEW' mode
+        letterMatricesCollectionsForTraining = DataStash.getLetterMatricesCollections(); //used in multi collections only 'ADD' mode
         return this;
     }
 
@@ -52,7 +52,7 @@ public class BundleScenarios {
                 alphabetRange, sourceMode, colorMode);
 
         List<Map<String, List<int[]>>> letterMatricesCollections = DataStash.getLetterMatricesCollections();
-        letterMatricesCollectionsThis = letterMatricesCollections;
+        letterMatricesCollectionsForTraining = letterMatricesCollections;
         Map<String, List<int[]>> mergedMap = new HashMap<>();
         for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollections.get(0).entrySet()) {
             mergedMap.put(
@@ -101,6 +101,7 @@ public class BundleScenarios {
                 blockMatrixInverted.get(i)[j] = BitmapUtils.invert(blockMatrixInverted.get(i)[j], colorMode);
             }
         }
+        //todo check cut logic, to cut string down to up maybe? No, it's not work for Ё Й similar symbols, tolerance logic maybe?
         List<List<int[]>> stringsFromBlock =
                 SourceCutter.simpleCutBlockIntoStrings(blockMatrixInverted);
 
@@ -210,23 +211,26 @@ public class BundleScenarios {
     private int w;
     private int h;
 
-    public BundleScenarios cornerizeModels(int width, int height) {
+    public BundleScenarios cornerizeModelsForTraining(int width, int height) {
         w = width;
         h = height;
         Map<String, List<int[]>> currMap;
         List<Map<String, List<int[]>>> currList = new ArrayList<>();
 
-        for (int i = 0; i < letterMatricesCollectionsThis.size(); i++) {
+        for (int i = 0; i < letterMatricesCollectionsForTraining.size(); i++) {
             currMap = new HashMap<>();
-            for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollectionsThis.get(i).entrySet()) {
+            for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollectionsForTraining.get(i).entrySet()) {
                 currMap.put(matrixEntry.getKey(), TrainSet.cornerizeTrimModel(
                         matrixEntry.getValue(), width, height
                 ));
             }
             currList.add(currMap);
         }
-        letterMatricesCollectionsThis = currList;
+        letterMatricesCollectionsForTraining = currList;
+        return this;
+    }
 
+    public BundleScenarios cornerizeModelsToRecognize(int width, int height) {
         toRecognizeMatricesModif = new ArrayList<>();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
@@ -238,23 +242,26 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios centerizeModels(int width, int height) {
+    public BundleScenarios centerizeModelsForTraining(int width, int height) {
         w = width;
         h = height;
         Map<String, List<int[]>> currMap;
         List<Map<String, List<int[]>>> currList = new ArrayList<>();
 
-        for (int i = 0; i < letterMatricesCollectionsThis.size(); i++) {
+        for (int i = 0; i < letterMatricesCollectionsForTraining.size(); i++) {
             currMap = new HashMap<>();
-            for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollectionsThis.get(i).entrySet()) {
+            for (Map.Entry<String, List<int[]>> matrixEntry : letterMatricesCollectionsForTraining.get(i).entrySet()) {
                 currMap.put(matrixEntry.getKey(), TrainSet.centerizeTrimModel(
                         matrixEntry.getValue(), width, height
                 ));
             }
             currList.add(currMap);
         }
-        letterMatricesCollectionsThis = currList;
+        letterMatricesCollectionsForTraining = currList;
+        return this;
+    }
 
+    public BundleScenarios centerizeModelsToRecognize(int width, int height) {
         toRecognizeMatricesModif = new ArrayList<>();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
@@ -278,7 +285,7 @@ public class BundleScenarios {
 
         NeuralRecognizer.initNet(w, h, hiddenNodes, outputNodes);
         NeuralRecognizer.createNet();
-        NeuralRecognizer.testSet(letterMatricesCollectionsThis, overTrainIterations);
+        NeuralRecognizer.testSet(letterMatricesCollectionsForTraining, overTrainIterations);
 
         try {
             CSVProcessorIO.writeMatrixToCSVFile(
