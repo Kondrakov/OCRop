@@ -248,4 +248,17 @@ public class TrainSet {
         }
         return output;
     }
+
+    public static List<int[]> canvasUniformFill(int value, int width, int height) {
+        List<int[]> output = new ArrayList<>();
+        for (int i = 0; i < height; i++) {
+            output.add(new int[width]);
+            if (value != 0) {
+                for (int j = 0; j < output.get(i).length; j++) {
+                    output.get(i)[j] = value;
+                }
+            }
+        }
+        return output;
+    }
 }

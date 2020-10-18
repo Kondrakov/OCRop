@@ -206,14 +206,34 @@ public class BundleScenarios {
         return this.recognized;
     }
 
+    public static List<int[]> spaceCleanAndFix(List<int[]> input, double percentTolerance,
+                                               int width, int height) {
+        double filledCounter = 0.0d;
+        for (int i = 0; i < input.size(); i++) {
+            for (int j = 0; j < input.get(i).length; j++) {
+                if (input.get(i)[j] > 0) {
+                    filledCounter ++;
+                }
+            }
+        }
+        double base = (double) (width * height);
+        double percent = filledCounter * 100 / base;
+        if (percent < percentTolerance) {
+            return TrainSet.canvasUniformFill(0, width, height);
+        } else {
+            //bypass
+            return input;
+        }
+    }
+
     List<List<int[]>> toRecognizeMatricesModif;
 
-    private int w;
-    private int h;
+    private int width;
+    private int height;
 
     public BundleScenarios cornerizeModelsForTraining(int width, int height) {
-        w = width;
-        h = height;
+        this.width = width;
+        this.height = height;
         Map<String, List<int[]>> currMap;
         List<Map<String, List<int[]>>> currList = new ArrayList<>();
 
@@ -230,9 +250,17 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios cornerizeModelsToRecognize(int width, int height) {
+    public BundleScenarios cornerizeModelsToRecognize(int width, int height,
+                                                      double spaceFixTolerance) {
         toRecognizeMatricesModif = new ArrayList<>();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
+            toRecognizeMatrices.set(i,
+                    spaceCleanAndFix(
+                            toRecognizeMatrices.get(i),
+                            spaceFixTolerance, width, height
+                    )
+            );
+
             if (toRecognizeMatrices.get(i).size() > 0) {
                 toRecognizeMatricesModif.add(TrainSet.cornerizeTrimModel(toRecognizeMatrices.get(i),
                         width, height));
@@ -243,8 +271,8 @@ public class BundleScenarios {
     }
 
     public BundleScenarios centerizeModelsForTraining(int width, int height) {
-        w = width;
-        h = height;
+        this.width = width;
+        this.height = height;
         Map<String, List<int[]>> currMap;
         List<Map<String, List<int[]>>> currList = new ArrayList<>();
 
@@ -261,10 +289,20 @@ public class BundleScenarios {
         return this;
     }
 
-    public BundleScenarios centerizeModelsToRecognize(int width, int height) {
+    public BundleScenarios centerizeModelsToRecognize(int width, int height,
+                                                      double spaceFixTolerance) {
         toRecognizeMatricesModif = new ArrayList<>();
         for (int i = 0; i < toRecognizeMatrices.size(); i++) {
             if (toRecognizeMatrices.get(i).size() > 0) {
+
+                //use filter instead?:
+                toRecognizeMatrices.set(i,
+                    spaceCleanAndFix(
+                            toRecognizeMatrices.get(i),
+                            spaceFixTolerance, width, height
+                    )
+                );
+
                 toRecognizeMatricesModif.add(TrainSet.centerizeTrimModel(toRecognizeMatrices.get(i),
                         width, height));
             }
@@ -283,7 +321,7 @@ public class BundleScenarios {
         this.inputToHiddenSourcePath = inputToHiddenWeightsPathSave;
         this.hiddenToOutputSourcePath = hiddenToOutputPathSave;
 
-        NeuralRecognizer.initNet(w, h, hiddenNodes, outputNodes);
+        NeuralRecognizer.initNet(width, height, hiddenNodes, outputNodes);
         NeuralRecognizer.createNet();
         NeuralRecognizer.testSet(letterMatricesCollectionsForTraining, overTrainIterations);
 

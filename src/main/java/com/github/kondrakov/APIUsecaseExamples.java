@@ -458,7 +458,7 @@ public class APIUsecaseExamples {
                         "data\\strings_to_recognize\\l%s.csv"
                 ).
                 cornerizeModelsForTraining(25, 25).
-                cornerizeModelsToRecognize(25, 25).
+                cornerizeModelsToRecognize(25, 25, 3).
                 neuralRecognize().
                 getRecognized();
     }
