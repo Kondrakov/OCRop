@@ -1,5 +1,7 @@
 package com.github.kondrakov.parser;
 
+import com.github.kondrakov.validation.BitmapDataParsingException;
+
 public class BitmapUtils {
     public final static String COLOR_16 = "color_16";
     public final static String COLOR_256 = "color_256";
@@ -33,11 +35,10 @@ public class BitmapUtils {
         return 255;
     }
 
-    public static boolean assertRightColorMode(String colorModeAsserting, int colorModeFromHeader) {
+    public static boolean assertRightColorMode(String colorModeAsserting, int colorModeFromHeader) throws BitmapDataParsingException {
         if (!colorModeAsserting.equals(recognizeColorMode(colorModeFromHeader))) {
-            System.out.println("WARNING!! Recognized color mode in bmp not match with asserted, please check file input color format");
-            System.out.println("Asserted: " + colorModeAsserting + ", from bmp header: " + recognizeColorMode(colorModeFromHeader));
-            return false;
+            throw new BitmapDataParsingException("WARNING!! Recognized color mode in bmp not match with asserted, please check file input color format\n" +
+                    "Asserted: " + colorModeAsserting + ", from bmp header: " + recognizeColorMode(colorModeFromHeader));
         }
         return true;
     }
