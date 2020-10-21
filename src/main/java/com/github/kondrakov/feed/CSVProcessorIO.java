@@ -108,9 +108,14 @@ public class CSVProcessorIO {
         String[] currentRow = new String[0];
         try {
             CSVReader reader = new CSVReader(new FileReader(inputPath), ';', '"', 0);
+            boolean flagUTFRem = false;
             while (currentRow != null) {
                 currentRow = reader.readNext();
                 if (currentRow != null) {
+                    if (!flagUTFRem) {
+                        flagUTFRem = true;
+                        currentRow = removeUTFByte(currentRow);
+                    }
                     matrix.add(UtilsConv.arrStrToArrDouble(currentRow));
                 }
             }
