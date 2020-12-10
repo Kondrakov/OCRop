@@ -15,6 +15,15 @@ public class BitmapParser {
         headerStartBMP_BM = new int[] { 0x42, 0x4d };
     }
 
+    /**
+     * Method for parse bmp file and convert file content to two-dimensional matrix with values of
+     * pixels from bmp. Header of bmp not to be included in resulting matrix.
+     * @param inputFileName path of bmp to parse
+     * @param outputFileName path for saving resulting matrix content csv file
+     * @param colorMode mandatory bmp color mode of pixels. To be match with color mode from header
+     *                  of processed bmp for checking bmp files right color mode
+     * @return result of parsing in matrix format
+     **/
     public static List<int[]> parse(String inputFileName, String outputFileName, String colorMode) {
         // todo refactor, extend image size field parse, add palette parse
         List<int[]> rawImageMatrix = new LinkedList<>();
@@ -118,12 +127,18 @@ public class BitmapParser {
         } catch (BitmapDataParsingException ex) {
             System.out.println(ex.getMessage());
         } catch (IOException ex) {
-            System.out.println("Not found BMP file for parsing or output path for writing bytes (see error message): " +
+            System.out.println("Not found BMP file to parse or output path to write bytes is not exists (see error message): " +
                     ex.getMessage());
         }
         return rawImageMatrix;
     }
 
+    /**
+     * Method calculates width of image in bytes by width in pixels and color mode including trailing bytes
+     * @param realWidth width of image in pixels
+     * @param colorMode color mode defining of bytes per pixel ratio
+     * @return quantity of bytes (width in bytes) with trailing
+     **/
     private static int calculateWidthWithTrailing(int realWidth, String colorMode) {
         int minDiscreteColorLength = (int) (4d / bytesPerColor(colorMode));
 
@@ -134,6 +149,11 @@ public class BitmapParser {
         return (int) ((double) requiredWidthByTrailingRule * bytesPerColor(colorMode));
     }
 
+    /**
+     * Method calculates bytes per one pixel for encoding it color
+     * @param colorMode color mode defining of bytes per pixel ratio
+     * @return quantity of bytes per one pixel
+     **/
     private static double bytesPerColor(String colorMode) {
         if (BitmapUtils.COLOR_16.equals(colorMode)) {
             return 0.5;
@@ -144,6 +164,12 @@ public class BitmapParser {
         return 1.0;
     }
 
+    /**
+     * Method parses bytes of one image row, cuts trailing bytes and converts it to array of pixels for 16 colors mode
+     * @param byteRowBuffer one pixel high row of bytes that represents one horizontal line of image with trailing bytes
+     * @param rowRealWidth image width in dots of color, not in bytes
+     * @return array of pixels, each item of array is a color of one pixel in a 16 color mode
+     **/
     private static int[] colorDotsAddRowParse_16(int[] byteRowBuffer, int rowRealWidth) {
         int[] row = new int[rowRealWidth];
         int byteCounter = 0;
@@ -171,6 +197,12 @@ public class BitmapParser {
         return row;
     }
 
+    /**
+     * Method parses bytes of one image row, cuts trailing bytes and converts it to array of pixels for 256 colors mode
+     * @param byteRowBuffer one pixel high row of bytes that represents one horizontal line of image with trailing bytes
+     * @param rowRealWidth image width in dots of color, not in bytes
+     * @return array of pixels, each item of array is a color of one pixel in a 256 color mode
+     **/
     private static int[] colorDotsAddRowParse_256(int[] byteRowBuffer, int rowRealWidth) {
         int[] row = new int[rowRealWidth];
         for (int i = 0; i < byteRowBuffer.length; i++) {
@@ -183,6 +215,14 @@ public class BitmapParser {
         return row;
     }
 
+    /**
+     * Method assembles matrix of color pixels into bmp file
+     * @param matrixInput matrix of color pixels
+     * @param headerPrototypeFileName chunk of bytes that represents a right meta data for assembling bmp
+     *                                note: can contains standard bmp header without bmp body inside only
+     *                                note: header data for matrixInput can consist of right metadata only
+     * @param colorMode color mode that defines colors per pixel
+     **/
     public static void assembleBitmap(List<int[]> matrixInput, String headerPrototypeFileName, String outputFileName, String colorMode) {
         List<int[]> matrix = new LinkedList<>();
         // todo refactor, add output color mode, add header generation
