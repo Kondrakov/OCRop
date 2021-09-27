@@ -39,11 +39,13 @@ public class BitmapParser {
         byte[] arrBytesWidth = null;
 
         FileInputStream fileInputString;
-        FileOutputStream fileOutputStream;
+        FileOutputStream fileOutputStream = null;
         int[] colorRowBuffer = new int[0];
         try {
             fileInputString = new FileInputStream(inputFileName);
-            fileOutputStream = new FileOutputStream(outputFileName);
+            if (outputFileName != null || !"".equals(outputFileName)) {
+                fileOutputStream = new FileOutputStream(outputFileName);
+            }
             int nextReadByte;
 
             while (fileInputString.available() > 0) {
@@ -58,7 +60,8 @@ public class BitmapParser {
                 }
                 if (startImageMatrixInfoOffset - 1 == byteCounterGlobal) {
                     //System.out.println(" + " + Integer.toHexString(nextReadByte));
-                    fileOutputStream.write(nextReadByte);
+                    if (fileOutputStream != null)
+                        fileOutputStream.write(nextReadByte);
                     byteCounterGlobal++;
                     arrBytesWidth = new byte[2];
                     fileInputString.read(arrBytesWidth);
@@ -69,7 +72,8 @@ public class BitmapParser {
                 if (byteCounterGlobal == widthImageMatrixInfo - 1) {
                     //todo rewrite: remove this if and its contents (maybe rewrite all com.github.kondrakov.parser logic on pre-count byte, and read by bytearray always)
                     if (startImageMatrixOffset == -1 || byteCounterGlobal < startImageMatrixOffset) {
-                        fileOutputStream.write(nextReadByte);
+                        if (fileOutputStream != null)
+                            fileOutputStream.write(nextReadByte);
                     }
                     byteCounterGlobal++;
                     arrBytesWidth = new byte[2];
@@ -103,27 +107,31 @@ public class BitmapParser {
                 //System.out.println(Integer.toHexString(nextReadByte));
                 //write header
                     /*if (startImageMatrixOffset == -1 || byteCounterGlobal < startImageMatrixOffset)
-                        fileOutputStream.write(nextReadByte);*/
+                        if (fileOutputStream != null)
+                            fileOutputStream.write(nextReadByte);*/
 
 
                 //write header
                 if (startImageMatrixOffset == -1 || byteCounterGlobal < startImageMatrixOffset) {
                     if (arrBytesWidth != null) {
-                        for (int i = 0; i < arrBytesWidth.length; i++) {
-                            fileOutputStream.write(arrBytesWidth[i]);
-                        }
+                        if (fileOutputStream != null)
+                            for (int i = 0; i < arrBytesWidth.length; i++) {
+                                fileOutputStream.write(arrBytesWidth[i]);
+                            }
                         byteCounterGlobal += arrBytesWidth.length;
                         arrBytesWidth = null;
                     } else {
                         //if (startImageMatrixOffset == -1 || byteCounterGlobal < startImageMatrixOffset)
-                        fileOutputStream.write(nextReadByte);
+                        if (fileOutputStream != null)
+                            fileOutputStream.write(nextReadByte);
                         byteCounterGlobal++;
                     }
                 }
             }
 
             fileInputString.close();
-            fileOutputStream.close();
+            if (fileOutputStream != null)
+                fileOutputStream.close();
         } catch (BitmapDataParsingException ex) {
             System.out.println(ex.getMessage());
         } catch (IOException ex) {

@@ -32,7 +32,7 @@ public class SourceCutter {
     public static List<int[]> cutCropByDims(String inputPath, Rectangle dims, String colorMode) {
         List<int[]> rawBitmap =
                 BitmapParser.parse(inputPath,
-                        "data\\strings_to_recognize\\page_to_cut_dupl.bmp", colorMode);
+                        null, colorMode);
         List<int[]> output = new ArrayList<>();
 
         int localCounter_i = 0;
