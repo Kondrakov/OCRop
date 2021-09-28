@@ -43,7 +43,7 @@ public class BitmapParser {
         int[] colorRowBuffer = new int[0];
         try {
             fileInputString = new FileInputStream(inputFileName);
-            if (outputFileName != null || !"".equals(outputFileName)) {
+            if (outputFileName != null && !"".equals(outputFileName)) {
                 fileOutputStream = new FileOutputStream(outputFileName);
             }
             int nextReadByte;
