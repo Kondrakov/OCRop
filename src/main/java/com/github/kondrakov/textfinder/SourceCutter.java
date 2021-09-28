@@ -30,7 +30,7 @@ public class SourceCutter {
     }
 
     public static List<int[]> cutCropByDims(String inputPath, Rectangle dims, String colorMode) {
-        List<int[]> rawBitmap =
+        List<int[]> rawBitmapPixels =
                 BitmapParser.parse(inputPath,
                         null, colorMode);
         List<int[]> output = new ArrayList<>();
@@ -40,7 +40,7 @@ public class SourceCutter {
         for (int i = (int) dims.getY(); i < (int) (dims.getHeight() + dims.getY()); i++) {
             output.add(new int[(int)dims.getWidth()]);
             for (int j = (int) dims.getX(); j < (int) (dims.getWidth() + dims.getX()); j++) {
-                output.get(localCounter_i)[localCounter_j] = rawBitmap.get(i)[j];
+                output.get(localCounter_i)[localCounter_j] = rawBitmapPixels.get(i)[j];
                 localCounter_j++;
             }
             localCounter_j = 0;
